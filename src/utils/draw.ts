@@ -1,14 +1,12 @@
 // 绘制正基本图形
+import { pointType } from "../types";
 
-interface pointType {
-  x: number;
-  y: number;
-}
 
 // 清空画布
 export function clearCanvas(canvas: HTMLCanvasElement) {
   const ctx = canvas.getContext("2d")!;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = 'white';
+  ctx.fillRect(0, 0, canvas.width, canvas.height); 
 }
 
 // 绘制直线

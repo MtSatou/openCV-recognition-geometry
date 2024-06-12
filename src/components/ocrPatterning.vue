@@ -17,6 +17,7 @@
     <button @click="drawCircle(canvasElement as HTMLCanvasElement, 150, 150, 100, 'red')">绘制圆形</button>
     <br /><br />
     <button @click="ocr(canvasElement as HTMLCanvasElement)">校验</button>
+    <button @click="clearCanvas(canvasElement as HTMLCanvasElement)">清空画布</button>
   </div>
 </template>
 
@@ -107,7 +108,7 @@ onMounted(() => {
         }
       } else {
         // 未闭合图形（线段）
-        console.log("未闭合");
+        console.log("未闭合", points);
       }
     });
 
