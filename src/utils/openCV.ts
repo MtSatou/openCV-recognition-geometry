@@ -57,19 +57,34 @@ function getContourSides(contour: any): { [key: string]: number } {
     );
     sides[`side${i + 1}`] = sideLength;
   }
+
   return sides;
 }
 
 // 判断形状
 function recognizeShapesUsingFeatures(contour: any): usingTypes {
+  // 顶点数量
   const verticesCount = contour.rows;
+  // 面积
   const area = cv.contourArea(contour);
+  // 周长
   const perimeter = cv.arcLength(contour, true);
+  // 形状坐标
   const rect = cv.boundingRect(contour);
-  const aspectRatio = rect.width / rect.height;
+  // 圆形率
+  const circularity = (4 * Math.PI * area) / Math.pow(perimeter, 2);
+  // 角度
   const angles = getContourAngles(contour);
+  // 边长
   const sides = getContourSides(contour);
-  const circularity = (4 * Math.PI * area) / Math.pow(perimeter, 2); // 圆形的面积与周长比
+  const returns: usingTypes = {
+    type: "未知",
+    rect,
+    angles,
+    sides: Object.values(sides),
+    vertices: getVerticesFromContour(contour),
+    circularity,
+  };
 
   // 判断五角星辅助函数
   function isStarShape(contour: any): boolean {
@@ -121,34 +136,29 @@ function recognizeShapesUsingFeatures(contour: any): usingTypes {
 
   // 判断形状类型
   if (verticesCount === 10 && isStarShape(contour)) {
-    return {
+    return Object.assign(returns, {
       type: "五角星",
-      data: getVerticesFromContour(contour),
-    };
+    });
   } else if (verticesCount > 6) {
     // 边数大于6的情况下判断为圆形
     if (circularity > 0.7) {
       // 增加容错
-      return {
+      return Object.assign(returns, {
         type: "圆形",
-        data: getVerticesFromContour(contour),
-      };
+      });
     } else {
-      return {
+      return Object.assign(returns, {
         type: "未知",
-        data: getVerticesFromContour(contour),
-      };
+      });
     }
   } else if (verticesCount === 6 && isHexagon(angles)) {
-    return {
+    return Object.assign(returns, {
       type: "六边形",
-      data: getVerticesFromContour(contour),
-    };
+    });
   } else if (verticesCount === 5 && isPentagon(angles)) {
-    return {
+    return Object.assign(returns, {
       type: "五边形",
-      data: getVerticesFromContour(contour),
-    };
+    });
   } else if (verticesCount === 4) {
     const sideLengths = Object.values(sides);
     const avgSideLength =
@@ -159,16 +169,14 @@ function recognizeShapesUsingFeatures(contour: any): usingTypes {
 
     if (sideLengthDiff < avgSideLength * 0.2 && maxAngleDiffFrom90 < 15) {
       // 所有边长度接近且所有角接近90度
-      return {
+      return Object.assign(returns, {
         type: "正方形",
-        data: getVerticesFromContour(contour),
-      };
+      });
     } else if (isRhombus(angles)) {
       // 两组对角接近45度或135度
-      return {
+      return Object.assign(returns, {
         type: "菱形",
-        data: getVerticesFromContour(contour),
-      };
+      });
     } else {
       const maxSide = Math.max(...sideLengths);
       const minSide = Math.min(...sideLengths);
@@ -180,34 +188,29 @@ function recognizeShapesUsingFeatures(contour: any): usingTypes {
 
       if (maxAngleDiffFrom90 < 20) {
         // 角度接近直角，判断为矩形
-        return {
+        return Object.assign(returns, {
           type: "矩形",
-          data: getVerticesFromContour(contour),
-        };
+        });
       } else if (sideRatio > 1.2) {
         // 边长差异较大，判断为梯形
-        return {
+        return Object.assign(returns, {
           type: "梯形",
-          data: getVerticesFromContour(contour),
-        };
+        });
       } else {
         // 角度不完全接近90度，且边长差异不大，判断为菱形
-        return {
+        return Object.assign(returns, {
           type: "菱形",
-          data: getVerticesFromContour(contour),
-        };
+        });
       }
     }
   } else if (verticesCount === 3) {
-    return {
+    return Object.assign(returns, {
       type: "三角形",
-      data: getVerticesFromContour(contour),
-    };
+    });
   } else {
-    return {
+    return Object.assign(returns, {
       type: "未知",
-      data: getVerticesFromContour(contour),
-    };
+    });
   }
 }
 
@@ -283,7 +286,7 @@ export function recognizeShapes(canvas: HTMLCanvasElement): usingTypes[] {
     cv.CHAIN_APPROX_SIMPLE
   );
 
-  const canvasVertices: usingTypes[] = [];
+  const canvasData: usingTypes[] = [];
   // 遍历轮廓
   for (let i = 0; i < contours.size(); i++) {
     const contour = contours.get(i);
@@ -292,7 +295,7 @@ export function recognizeShapes(canvas: HTMLCanvasElement): usingTypes[] {
     cv.approxPolyDP(contour, approx, 0.02 * perimeter, true);
     const data = recognizeShapesUsingFeatures(approx);
     if (data) {
-      canvasVertices.push(data);
+      canvasData.push(data);
     }
   }
 
@@ -304,7 +307,7 @@ export function recognizeShapes(canvas: HTMLCanvasElement): usingTypes[] {
   contours.delete();
   hierarchy.delete();
 
-  return canvasVertices;
+  return canvasData;
 }
 
 /**检测图形是否闭合 */
@@ -324,7 +327,7 @@ export function isClosedShape(
   return distance <= threshold;
 }
 
-/** 获取更合适的顶点数据 */
+/** 获取更合适的数据 */
 export function getMostFrequentShape(shapes: usingTypes[]): usingTypes | null {
   if (shapes.length === 0) return null;
   // 过滤未知的数据
@@ -353,4 +356,11 @@ export function getMostFrequentShape(shapes: usingTypes[]): usingTypes | null {
   }
 
   return typeData[mostFrequentType] || null;
+}
+
+/**识别图形数据 */
+export const ocr = (canvas: HTMLCanvasElement) => {
+  const data = recognizeShapes(canvas);
+  const shape = getMostFrequentShape(data);
+  return shape
 }

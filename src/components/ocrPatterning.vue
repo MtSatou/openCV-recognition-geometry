@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts" setup>
-import { recognizeShapes, isClosedShape, getMostFrequentShape, createCircleFromPoints } from "../utils/openCV"
+import { ocr, isClosedShape, createCircleFromPoints } from "../utils/openCV"
 import {
   clearCanvas,
   drawLine,
@@ -42,13 +42,6 @@ import {
 } from "../utils/draw"
 import { ref, onMounted } from "vue";
 const canvasElement = ref<HTMLCanvasElement>()!;
-
-const ocr = (canvas: HTMLCanvasElement) => {
-  const data = recognizeShapes(canvas);
-  const shape = getMostFrequentShape(data);
-  console.log(shape, data);
-  return shape
-}
 
 onMounted(() => {
   (async () => {
@@ -89,22 +82,22 @@ onMounted(() => {
         // 未知图形直接获取所有顶点坐标以直线连接
         if (mostFrequentShape.type === "未知") {
           clearCanvas(canvas);
-          drawShapeFromPoints(canvas, mostFrequentShape.data, true)
+          drawShapeFromPoints(canvas, mostFrequentShape.vertices, true)
         }
         // 特殊处理：画圆、矩形、正方形
         else if (mostFrequentShape.type === "圆形") {
-          const { center, radius } = createCircleFromPoints(mostFrequentShape.data);
+          const { center, radius } = createCircleFromPoints(mostFrequentShape.vertices);
           clearCanvas(canvas);
           drawCircle(canvas, center.x, center.y, radius, "black");
         } else if (mostFrequentShape?.type === "矩形") {
           clearCanvas(canvas);
-          drawRectangleFromPoints(canvas, mostFrequentShape.data);
+          drawRectangleFromPoints(canvas, mostFrequentShape.vertices);
         } else if (mostFrequentShape?.type === "正方形") {
           clearCanvas(canvas);
-          drawSquareFromPoints(canvas, mostFrequentShape.data);
+          drawSquareFromPoints(canvas, mostFrequentShape.vertices);
         } else {
           clearCanvas(canvas);
-          drawShapeOnCanvas(canvas, mostFrequentShape.data);
+          drawShapeOnCanvas(canvas, mostFrequentShape.vertices);
         }
       } else {
         // 未闭合图形（线段）
