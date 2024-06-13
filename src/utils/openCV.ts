@@ -367,6 +367,11 @@ function calculateVector(p1: pointType, p2: pointType): [number, number] {
   return [p2.x - p1.x, p2.y - p1.y];
 }
 
+/**计算两个点之间的距离 */
+function calculateDistance(p1: pointType, p2: pointType): number {
+  return Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2);
+}
+
 /**计算两个向量之间的夹角 */
 function calculateAngle(v1: [number, number], v2: [number, number]): number {
   const dotProduct = v1[0] * v2[0] + v1[1] * v2[1];
@@ -416,4 +421,34 @@ export function findCorners(
   // 终点
   corners.push(points[points.length - 1]);
   return corners;
+}
+
+/**
+ * 过滤掉密集的点，密集地方只留下一个点
+ * @param corners 拐角点数组
+ * @param minDistance 最小间距
+ * @returns
+ */
+export function filterDensePoints(
+  corners: pointType[],
+  minDistance: number = 20
+): pointType[] {
+  if (corners.length < 2) {
+    return corners;
+  }
+  corners = findCorners(corners);
+  const filteredCorners: pointType[] = [corners[0]];
+  for (let i = 1; i < corners.length; i++) {
+    const lastCorner = filteredCorners[filteredCorners.length - 1];
+    const currentCorner = corners[i];
+    const distance = Math.sqrt(
+      (currentCorner.x - lastCorner.x) ** 2 +
+        (currentCorner.y - lastCorner.y) ** 2
+    );
+    if (distance >= minDistance) {
+      filteredCorners.push(currentCorner);
+    }
+  }
+
+  return filteredCorners;
 }

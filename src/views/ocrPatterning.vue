@@ -70,9 +70,9 @@
           <button @click="drawCircle(canvasElement as HTMLCanvasElement, 150, 150, 100)">绘制圆形</button>
         </div>
         <div style="display: flex; margin-top: 10px; align-items: center;">
-          <button @click="ocrHandler">校验</button>
+          <button @click="ocrHandler" style="background: #f74">校验</button>
           <button @click="clear">清空画布</button>
-          <CheckBox v-model="showCornerPoint" label="显示角点"></CheckBox>
+          <CheckBox v-model="showCornerPoint" label="线段角点"></CheckBox>
         </div>
       </div>
       <div id="OCRTEXT">= v =</div>
@@ -83,7 +83,7 @@
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
 import type { pointType } from "../types"
-import { ocr, isClosedShape, createCircleFromPoints, findCorners } from "../utils/openCV"
+import { ocr, isClosedShape, createCircleFromPoints, filterDensePoints } from "../utils/openCV"
 import {
   clearCanvas,
   drawCircle,
@@ -135,7 +135,7 @@ onMounted(() => {
 
         // 未知图形直接获取所有顶点坐标以直线连接
         if (mostFrequentShape.type === "未知") {
-          const corners = findCorners(points)
+          const corners = filterDensePoints(points)
           clearCanvas(canvas);
           drawShapeFromPoints(canvas, corners, true)
         }
@@ -151,7 +151,7 @@ onMounted(() => {
           clearCanvas(canvas);
           drawSquareFromPoints(canvas, mostFrequentShape.vertices);
         } else if (mostFrequentShape?.type === "五角星") {
-          const corners = findCorners(points)
+          const corners = filterDensePoints(points)
           clearCanvas(canvas);
           drawShapeFromPoints(canvas, corners)
         } else {
@@ -160,7 +160,7 @@ onMounted(() => {
         }
       } else {
         // 未闭合图形（线段）
-        const corners = findCorners(points)
+        const corners = filterDensePoints(points)
         setTEXT("未闭合：" + corners.length + " 点")
         clearCanvas(canvas);
         drawShapeFromPoints(canvas, corners)
@@ -199,7 +199,7 @@ const setTEXT = (text: string) => {
 /**识别图像 */
 const ocrHandler = () => {
   const data = ocr(canvasElement.value!)
-  setTEXT("闭合：" + data?.type)
+  setTEXT(data?.type)
 }
 
 /**清空画布*/
