@@ -425,7 +425,7 @@ export function findCorners(
 
 /**
  * 过滤掉密集的点，密集地方只留下一个点
- * @param corners 拐角点数组
+ * @param corners 角点数组
  * @param minDistance 最小间距
  * @returns
  */

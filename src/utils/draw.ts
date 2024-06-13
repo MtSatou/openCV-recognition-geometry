@@ -20,10 +20,10 @@ export function drawLine(
 ) {
   const ctx = canvas.getContext("2d")!;
   ctx.beginPath();
-  ctx.moveTo(pointA.x, pointA.y); // 移动到起点
-  ctx.lineTo(pointB.x, pointB.y); // 画一条直线到终点
+  ctx.moveTo(pointA.x, pointA.y);
+  ctx.lineTo(pointB.x, pointB.y); 
   ctx.strokeStyle = config.lineColor;
-  ctx.stroke(); // 描边
+  ctx.stroke();
 }
 
 // 画圆
