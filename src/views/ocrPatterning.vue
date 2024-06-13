@@ -73,6 +73,7 @@
           <button @click="ocrHandler" style="background: #f74">校验</button>
           <button @click="clear">清空画布</button>
           <CheckBox v-model="showCornerPoint" label="线段角点"></CheckBox>
+          <CheckBox v-model="unknownFigureTransition" label="未知图形不转化"></CheckBox>
         </div>
       </div>
       <div id="OCRTEXT">= v =</div>
@@ -99,6 +100,7 @@ const canvasElement = ref<HTMLCanvasElement>()!;
 const { innerHeight, innerWidth } = window;
 
 const showCornerPoint = ref(true);
+const unknownFigureTransition = ref(true);
 onMounted(() => {
   (async () => {
     const canvas = canvasElement.value!;
@@ -129,12 +131,17 @@ onMounted(() => {
         // openCV识别
         const mostFrequentShape = ocr(canvas)
         setTEXT("闭合：" + mostFrequentShape?.type)
+        console.log("闭合", mostFrequentShape)
         if (!mostFrequentShape) {
           return;
         }
 
         // 未知图形直接获取所有顶点坐标以直线连接
         if (mostFrequentShape.type === "未知") {
+          // 勾选了未知图形不转化
+          if (unknownFigureTransition.value) {
+            return
+          }
           const corners = filterDensePoints(points)
           clearCanvas(canvas);
           drawShapeFromPoints(canvas, corners, true)
@@ -162,6 +169,7 @@ onMounted(() => {
         // 未闭合图形（线段）
         const corners = filterDensePoints(points)
         setTEXT("未闭合：" + corners.length + " 点")
+        console.log("未闭合：", corners)
         clearCanvas(canvas);
         drawShapeFromPoints(canvas, corners)
 
