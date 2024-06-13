@@ -1,4 +1,4 @@
-import { usingTypes } from "../types";
+import { usingTypes, pointType } from "../types";
 
 // @ts-expect-error
 const cv = window.cv!;
@@ -215,8 +215,8 @@ function recognizeShapesUsingFeatures(contour: any): usingTypes {
 }
 
 /**计算顶点坐标 */
-function getVerticesFromContour(contour: any): { x: number; y: number }[] {
-  const vertices: { x: number; y: number }[] = [];
+function getVerticesFromContour(contour: any): pointType[] {
+  const vertices: pointType[] = [];
   for (let i = 0; i < contour.rows; i++) {
     vertices.push({
       x: contour.data32S[i * 2],
@@ -227,8 +227,8 @@ function getVerticesFromContour(contour: any): { x: number; y: number }[] {
 }
 
 /**圆心和半径 */
-export function createCircleFromPoints(points: { x: number; y: number }[]): {
-  center: { x: number; y: number };
+export function createCircleFromPoints(points: pointType[]): {
+  center: pointType;
   radius: number;
 } {
   if (points.length === 0) {
@@ -349,10 +349,7 @@ export const ocr = (canvas: HTMLCanvasElement) => {
 };
 
 /**检测图形是否闭合 */
-export function isClosedShape(
-  points: { x: number; y: number }[],
-  threshold = 20
-): boolean {
+export function isClosedShape(points: pointType[], threshold = 20): boolean {
   if (points.length < 3) return false; // 至少需要三个点构成一个闭合图形
   const firstPoint = points[0];
   const lastPoint = points[points.length - 1];
@@ -363,4 +360,60 @@ export function isClosedShape(
 
   // 判断距离是否小于阈值，则闭合
   return distance <= threshold;
+}
+
+/**计算两个点之间的向量 */
+function calculateVector(p1: pointType, p2: pointType): [number, number] {
+  return [p2.x - p1.x, p2.y - p1.y];
+}
+
+/**计算两个向量之间的夹角 */
+function calculateAngle(v1: [number, number], v2: [number, number]): number {
+  const dotProduct = v1[0] * v2[0] + v1[1] * v2[1];
+  const magnitude1 = Math.sqrt(v1[0] ** 2 + v1[1] ** 2);
+  const magnitude2 = Math.sqrt(v2[0] ** 2 + v2[1] ** 2);
+  const cosTheta = dotProduct / (magnitude1 * magnitude2);
+  const angle = Math.acos(cosTheta) * (180 / Math.PI);
+  return angle;
+}
+
+/**
+ * 取指定角度阈值的拐角点
+ * @param points 坐标
+ * @param angleThreshold 拐角判断阈值
+ * @param minInterval 线段判断的间距
+ * @returns
+ */
+export function findCorners(
+  points: pointType[],
+  angleThreshold: number = 30,
+  minInterval: number = 5
+): pointType[] {
+  if (points.length < 3) {
+    return [];
+  }
+
+  // 添加起点
+  const corners: pointType[] = [points[0]];
+
+  for (let i = 1; i < points.length - 1; i++) {
+    const vector1 = calculateVector(points[i - 1], points[i]);
+    const vector2 = calculateVector(points[i], points[i + 1]);
+    const angle = calculateAngle(vector1, vector2);
+    if (angle > angleThreshold) {
+      // 确保距离上一个拐角点有足够的间隔
+      if (
+        i -
+          (corners.length === 0
+            ? 0
+            : points.indexOf(corners[corners.length - 1])) >=
+        minInterval
+      ) {
+        corners.push(points[i]);
+      }
+    }
+  }
+  // 终点
+  corners.push(points[points.length - 1]);
+  return corners;
 }
