@@ -1,7 +1,7 @@
 <template>
   <div>
-    <canvas ref="canvasElement" class="ocrCanvas" :width="innerWidth - 40 + 'px'"
-      :height="innerHeight - 130 + 'px'"></canvas><br /><br />
+    <canvas ref="canvasElement" class="ocrCanvas" :width="innerWidth - 20 + 'px'"
+      :height="innerHeight - 120 + 'px'"></canvas><br /><br />
     <button @click="drawShapeOnCanvas(canvasElement as HTMLCanvasElement, [
       { x: 100, y: 100 },
       { x: 200, y: 100 },
@@ -178,8 +178,11 @@ const ocrHandler = () => {
 </script>
 
 <style scoped>
+::v-global(body) {
+  background-color: #e8e8e8;
+}
 .ocrCanvas {
-  border: 1px solid black;
+  box-shadow: 0 0 5px 3px #ddd;
 }
 
 button {
@@ -188,8 +191,7 @@ button {
   border: none;
   color: #eee;
   background-color: rgb(60, 141, 182);
-  box-shadow: 0 0 5px -1px #000;
-  border-radius: 4px;
+  border-radius: 2px;
   cursor: pointer;
 }
 </style>

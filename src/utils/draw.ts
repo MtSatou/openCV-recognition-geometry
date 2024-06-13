@@ -2,7 +2,7 @@
 import { pointType } from "../types";
 
 const config = {
-  lineColor: "#690"
+  lineColor: "#6699ee"
 }
 
 // 清空画布
