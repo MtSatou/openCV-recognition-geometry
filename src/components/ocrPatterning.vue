@@ -1,39 +1,81 @@
 <template>
   <div>
-    <canvas ref="canvasElement" class="ocrCanvas" width="600px" height="300px"></canvas><br /><br />
-    <button @click="drawTriangle(canvasElement as HTMLCanvasElement, [
+    <canvas ref="canvasElement" class="ocrCanvas" :width="innerWidth - 40 + 'px'"
+      :height="innerHeight - 130 + 'px'"></canvas><br /><br />
+    <button @click="drawShapeOnCanvas(canvasElement as HTMLCanvasElement, [
       { x: 100, y: 100 },
       { x: 200, y: 100 },
       { x: 150, y: 200 }
-    ], 'red')">绘制三角形</button>
-    <button @click="drawSquare(canvasElement as HTMLCanvasElement, 50, 50, 100, 'red')">绘制正方形</button>
-    <button @click="drawRectangle(canvasElement as HTMLCanvasElement, 200, 50, 100, 50, 'red')">绘制矩形</button>
-    <button @click="drawDiamond(canvasElement as HTMLCanvasElement, 200, 200, 100, 150, 'red')">绘制菱形</button>
-    <button
-      @click="drawTrapezoid(canvasElement as HTMLCanvasElement, 100, 100, 200, 100, 250, 200, 50, 200, 'red')">绘制梯形</button>
-    <button @click="drawPentagon(canvasElement as HTMLCanvasElement, 150, 150, 100, 'red')">绘制五边形</button>
-    <button @click="drawHexagon(canvasElement as HTMLCanvasElement, 150, 150, 100, 'red')">绘制六边形</button>
-    <button @click="drawStar(canvasElement as HTMLCanvasElement, 150, 150, 100, 50, 5, 'red')">绘制五角星</button>
-    <button @click="drawCircle(canvasElement as HTMLCanvasElement, 150, 150, 100, 'red')">绘制圆形</button>
+    ])">绘制三角形</button>
+
+    <button @click="drawShapeOnCanvas(canvasElement as HTMLCanvasElement, [
+      { x: 100, y: 100 },
+      { x: 200, y: 100 },
+      { x: 200, y: 200 },
+      { x: 100, y: 200 }
+    ])">绘制正方形</button>
+
+    <button @click="drawShapeOnCanvas(canvasElement as HTMLCanvasElement, [
+      { x: 100, y: 100 },
+      { x: 250, y: 100 },
+      { x: 250, y: 200 },
+      { x: 100, y: 200 }
+    ])">绘制矩形</button>
+
+    <button @click="drawShapeOnCanvas(canvasElement as HTMLCanvasElement, [
+      { x: 150, y: 100 },
+      { x: 220, y: 150 },
+      { x: 150, y: 200 },
+      { x: 80, y: 150 }
+    ])">绘制菱形</button>
+
+    <button @click="drawShapeOnCanvas(canvasElement as HTMLCanvasElement, [
+      { x: 120, y: 100 },
+      { x: 160, y: 100 },
+      { x: 220, y: 200 },
+      { x: 80, y: 200 }
+    ])">绘制梯形</button>
+
+    <button @click="drawShapeOnCanvas(canvasElement as HTMLCanvasElement, [
+      { x: 150, y: 100 },
+      { x: 200, y: 130 },
+      { x: 180, y: 200 },
+      { x: 120, y: 200 },
+      { x: 100, y: 130 }
+    ])">绘制五边形</button>
+
+    <button @click="drawShapeOnCanvas(canvasElement as HTMLCanvasElement, [
+      { x: 150, y: 100 },
+      { x: 200, y: 130 },
+      { x: 200, y: 180 },
+      { x: 150, y: 210 },
+      { x: 100, y: 180 },
+      { x: 100, y: 130 }
+    ])">绘制六边形</button>
+
+    <button @click="drawShapeOnCanvas(canvasElement as HTMLCanvasElement, [
+      { x: 150, y: 100 },
+      { x: 170, y: 140 },
+      { x: 220, y: 150 },
+      { x: 180, y: 180 },
+      { x: 190, y: 230 },
+      { x: 150, y: 200 },
+      { x: 110, y: 230 },
+      { x: 120, y: 180 },
+      { x: 80, y: 150 },
+      { x: 130, y: 140 }
+    ])">绘制五角星</button>
+    <button @click="drawCircle(canvasElement as HTMLCanvasElement, 150, 150, 100)">绘制圆形</button>
     <br /><br />
-    <button @click="ocr(canvasElement as HTMLCanvasElement)">校验</button>
+    <button @click="ocrHandler">校验</button>
     <button @click="clearCanvas(canvasElement as HTMLCanvasElement)">清空画布</button>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ocr, isClosedShape, createCircleFromPoints } from "../utils/openCV"
+import { ocr, isClosedShape, createCircleFromPoints, findCorners } from "../utils/openCV"
 import {
   clearCanvas,
-  drawLine,
-  drawTriangle,
-  drawSquare,
-  drawRectangle,
-  drawDiamond,
-  drawTrapezoid,
-  drawPentagon,
-  drawHexagon,
-  drawStar,
   drawCircle,
   drawShapeOnCanvas,
   drawSquareFromPoints,
@@ -42,6 +84,7 @@ import {
 } from "../utils/draw"
 import { ref, onMounted } from "vue";
 const canvasElement = ref<HTMLCanvasElement>()!;
+const { innerHeight, innerWidth } = window;
 
 onMounted(() => {
   (async () => {
@@ -70,38 +113,44 @@ onMounted(() => {
       drawing = false;
       // 闭合图形
       if (isClosedShape(points)) {
-        drawLine(canvas, points[0], points[points.length - 1])
         // openCV识别
         const mostFrequentShape = ocr(canvas)
-        console.log(mostFrequentShape, "绘制")
+        console.log("闭合", mostFrequentShape)
         if (!mostFrequentShape) {
-          // 未识别到的图形，直接获取顶点绘制直线
           return;
         }
 
         // 未知图形直接获取所有顶点坐标以直线连接
         if (mostFrequentShape.type === "未知") {
+          const corners = findCorners(points)
           clearCanvas(canvas);
-          drawShapeFromPoints(canvas, mostFrequentShape.vertices, true)
+          drawShapeFromPoints(canvas, corners, true)
         }
         // 特殊处理：画圆、矩形、正方形
         else if (mostFrequentShape.type === "圆形") {
           const { center, radius } = createCircleFromPoints(mostFrequentShape.vertices);
           clearCanvas(canvas);
-          drawCircle(canvas, center.x, center.y, radius, "black");
+          drawCircle(canvas, center.x, center.y, radius);
         } else if (mostFrequentShape?.type === "矩形") {
           clearCanvas(canvas);
           drawRectangleFromPoints(canvas, mostFrequentShape.vertices);
         } else if (mostFrequentShape?.type === "正方形") {
           clearCanvas(canvas);
           drawSquareFromPoints(canvas, mostFrequentShape.vertices);
+        } else if (mostFrequentShape?.type === "五角星") {
+          const corners = findCorners(points)
+          clearCanvas(canvas);
+          drawShapeFromPoints(canvas, corners)
         } else {
           clearCanvas(canvas);
           drawShapeOnCanvas(canvas, mostFrequentShape.vertices);
         }
       } else {
         // 未闭合图形（线段）
-        console.log("未闭合", points);
+        const corners = findCorners(points)
+        console.log("未闭合", corners)
+        clearCanvas(canvas);
+        drawShapeFromPoints(canvas, corners)
       }
     });
 
@@ -118,14 +167,29 @@ onMounted(() => {
       }
       ctx.stroke();
     }
-
   })();
 });
+
+const ocrHandler = () => {
+  const data = ocr(canvasElement.value!)
+  console.log(data);
+}
 
 </script>
 
 <style scoped>
 .ocrCanvas {
   border: 1px solid black;
+}
+
+button {
+  padding: 6px 10px;
+  margin-right: 10px;
+  border: none;
+  color: #eee;
+  background-color: rgb(60, 141, 182);
+  box-shadow: 0 0 5px -1px #000;
+  border-radius: 4px;
+  cursor: pointer;
 }
 </style>
