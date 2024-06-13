@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "ml5": "^0.12.2",
+    "sass": "^1.77.5",
     "vue": "^3.4.21"
   },
   "devDependencies": {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import OcrPatterning from "./components/ocrPatterning.vue";
+import OcrPatterning from "./views/ocrPatterning.vue";
 </script>
 
 <template>
