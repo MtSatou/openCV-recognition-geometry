@@ -3,7 +3,7 @@ import { usingTypes } from "../types";
 // @ts-expect-error
 const cv = window.cv!;
 
-// 计算角度
+/**计算角度 */
 function getContourAngles(contour: any): number[] {
   const angles: number[] = [];
   for (let i = 0; i < contour.rows; i++) {
@@ -39,7 +39,7 @@ function getContourAngles(contour: any): number[] {
   return angles;
 }
 
-// 计算边长
+/**计算边长 */
 function getContourSides(contour: any): { [key: string]: number } {
   const sides: { [key: string]: number } = {};
   for (let i = 0; i < contour.rows; i++) {
@@ -61,7 +61,7 @@ function getContourSides(contour: any): { [key: string]: number } {
   return sides;
 }
 
-// 判断形状
+/**判断形状 */
 function recognizeShapesUsingFeatures(contour: any): usingTypes {
   // 顶点数量
   const verticesCount = contour.rows;
@@ -214,7 +214,7 @@ function recognizeShapesUsingFeatures(contour: any): usingTypes {
   }
 }
 
-// 计算顶点坐标
+/**计算顶点坐标 */
 function getVerticesFromContour(contour: any): { x: number; y: number }[] {
   const vertices: { x: number; y: number }[] = [];
   for (let i = 0; i < contour.rows; i++) {
@@ -226,7 +226,7 @@ function getVerticesFromContour(contour: any): { x: number; y: number }[] {
   return vertices;
 }
 
-// 获取圆心和半径
+/**圆心和半径 */
 export function createCircleFromPoints(points: { x: number; y: number }[]): {
   center: { x: number; y: number };
   radius: number;
@@ -262,7 +262,7 @@ export function createCircleFromPoints(points: { x: number; y: number }[]): {
   return { center, radius };
 }
 
-// 创建opencv解析图像
+/**opencv解析图像 */
 export function recognizeShapes(canvas: HTMLCanvasElement): usingTypes[] {
   // 获取 canvas 图像数据
   const ctx = canvas.getContext("2d")!;
@@ -310,24 +310,7 @@ export function recognizeShapes(canvas: HTMLCanvasElement): usingTypes[] {
   return canvasData;
 }
 
-/**检测图形是否闭合 */
-export function isClosedShape(
-  points: { x: number; y: number }[],
-  threshold = 20
-): boolean {
-  if (points.length < 3) return false; // 至少需要三个点构成一个闭合图形
-  const firstPoint = points[0];
-  const lastPoint = points[points.length - 1];
-
-  const dx = lastPoint.x - firstPoint.x;
-  const dy = lastPoint.y - firstPoint.y;
-  const distance = Math.sqrt(dx * dx + dy * dy);
-
-  // 判断距离是否小于阈值，则闭合
-  return distance <= threshold;
-}
-
-/** 获取更合适的数据 */
+/**获取更合适的数据(出现次数最多) */
 export function getMostFrequentShape(shapes: usingTypes[]): usingTypes | null {
   if (shapes.length === 0) return null;
   // 过滤未知的数据
@@ -362,5 +345,22 @@ export function getMostFrequentShape(shapes: usingTypes[]): usingTypes | null {
 export const ocr = (canvas: HTMLCanvasElement) => {
   const data = recognizeShapes(canvas);
   const shape = getMostFrequentShape(data);
-  return shape
+  return shape;
+};
+
+/**检测图形是否闭合 */
+export function isClosedShape(
+  points: { x: number; y: number }[],
+  threshold = 20
+): boolean {
+  if (points.length < 3) return false; // 至少需要三个点构成一个闭合图形
+  const firstPoint = points[0];
+  const lastPoint = points[points.length - 1];
+
+  const dx = lastPoint.x - firstPoint.x;
+  const dy = lastPoint.y - firstPoint.y;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+
+  // 判断距离是否小于阈值，则闭合
+  return distance <= threshold;
 }
