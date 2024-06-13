@@ -73,6 +73,7 @@
           <button @click="ocrHandler" style="background: #f74">校验</button>
           <button @click="clear">清空画布</button>
           <CheckBox v-model="showCornerPoint" label="线段角点"></CheckBox>
+          <CheckBox v-model="alwaysClosed" label="总是闭合"></CheckBox>
           <CheckBox v-model="unknownFigureTransition" label="未知图形不转化"></CheckBox>
         </div>
       </div>
@@ -99,8 +100,9 @@ import CheckBox from "../components/checkbox.vue"
 const canvasElement = ref<HTMLCanvasElement>()!;
 const { innerHeight, innerWidth } = window;
 
+const alwaysClosed = ref(true);
 const showCornerPoint = ref(true);
-const unknownFigureTransition = ref(true);
+const unknownFigureTransition = ref(false);
 onMounted(() => {
   (async () => {
     const canvas = canvasElement.value!;
@@ -126,6 +128,11 @@ onMounted(() => {
 
     canvas.addEventListener("mouseup", () => {
       drawing = false;
+      // 总是闭合
+      if (alwaysClosed.value) {
+        points.push(points[0]);
+        console.log(points)
+      }
       // 闭合图形
       if (isClosedShape(points)) {
         // openCV识别
@@ -180,6 +187,7 @@ onMounted(() => {
           }
         }
       }
+
     });
 
     // 移动绘制
@@ -192,6 +200,11 @@ onMounted(() => {
       ctx.moveTo(points[0].x, points[0].y);
       for (let i = 1; i < points.length; i++) {
         ctx.lineTo(points[i].x, points[i].y);
+      }
+
+      // 总是闭合
+      if (alwaysClosed.value) {
+        ctx.lineTo(points[0].x, points[0].y);
       }
       ctx.stroke();
     }
