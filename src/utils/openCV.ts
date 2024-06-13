@@ -363,17 +363,17 @@ export function isClosedShape(points: pointType[], threshold = 20): boolean {
 }
 
 /**计算两个点之间的向量 */
-function calculateVector(p1: pointType, p2: pointType): [number, number] {
+export function calculateVector(p1: pointType, p2: pointType): [number, number] {
   return [p2.x - p1.x, p2.y - p1.y];
 }
 
 /**计算两个点之间的距离 */
-function calculateDistance(p1: pointType, p2: pointType): number {
+export function calculateDistance(p1: pointType, p2: pointType): number {
   return Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2);
 }
 
 /**计算两个向量之间的夹角 */
-function calculateAngle(v1: [number, number], v2: [number, number]): number {
+export function calculateAngle(v1: [number, number], v2: [number, number]): number {
   const dotProduct = v1[0] * v2[0] + v1[1] * v2[1];
   const magnitude1 = Math.sqrt(v1[0] ** 2 + v1[1] ** 2);
   const magnitude2 = Math.sqrt(v2[0] ** 2 + v2[1] ** 2);

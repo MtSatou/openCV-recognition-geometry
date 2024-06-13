@@ -199,7 +199,7 @@ const setTEXT = (text: string) => {
 /**识别图像 */
 const ocrHandler = () => {
   const data = ocr(canvasElement.value!)
-  setTEXT(data?.type)
+  setTEXT(data?.type!)
 }
 
 /**清空画布*/
