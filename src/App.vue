@@ -32,6 +32,9 @@ const mouseupHandler = (evt: any) => {
     :showCornerPoint="showCornerPoint" 
     :alwaysClosed="alwaysClosed" 
     :unknownFigureTransition="unknownFigureTransition" 
+    :style="{
+      boxShadow: '0 0 5px 3px #ddd'
+    }"
     @mouseup="mouseupHandler"
   ></OcrPatterning>
   <div class="op">

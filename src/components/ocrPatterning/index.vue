@@ -1,9 +1,9 @@
 <template>
   <canvas 
     ref="canvasElement" 
-    class="ocrCanvas" 
     :width="typeof width === 'number' ? width + 'px' : width"
     :height="typeof height === 'number' ? height + 'px' : height"
+    :="$attrs"
   ></canvas>
 </template>
 
@@ -175,9 +175,3 @@ defineExpose({
   ocrCanvas
 })
 </script>
-
-<style scoped lang="scss">
-.ocrCanvas {
-  box-shadow: 0 0 5px 3px #ddd;
-}
-</style>
