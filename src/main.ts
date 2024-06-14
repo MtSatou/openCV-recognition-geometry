@@ -1,6 +1,6 @@
 import App from './App.vue'
 import { createApp } from 'vue';
-import { Button, Input, Checkbox, Select } from 'ant-design-vue';
+import { Button, Input, Checkbox, Select, Slider } from 'ant-design-vue';
 
 const app = createApp(App);
 
@@ -8,5 +8,6 @@ const app = createApp(App);
 app.use(Input)
 app.use(Button)
 app.use(Select)
+app.use(Slider)
 app.use(Checkbox)
 app.mount('#app')

@@ -32,12 +32,8 @@ const mouseupHandler = (evt: any) => {
 const colorConfig = ref<brushOptions>({
   color: '#6699ee',
   size: 3,
-  lineType: '虚线'
+  lineType: '实线'
 })
-const colorChange = (evt: any) => {
-  console.log(evt)
-  // colorConfig.value.color = evt.target.value;
-}
 </script>
 
 <template>
@@ -126,7 +122,7 @@ const colorChange = (evt: any) => {
         <a-checkbox v-model:checked="showCornerPoint">线段角点</a-checkbox>
         <a-checkbox v-model:checked="alwaysClosed">总是闭合</a-checkbox>
         <a-checkbox v-model:checked="unknownFigureTransition">未知图形不转化</a-checkbox>
-        <a-input v-model:value="colorConfig.color" type="color" @change="colorChange" style="width: 50px"/>
+        <a-input v-model:value="colorConfig.color" type="color" style="width: 50px"/>
         <a-select
           v-model:value="colorConfig.lineType"
           style="width: 120px"
@@ -135,6 +131,7 @@ const colorChange = (evt: any) => {
           <a-select-option value="虚线">虚线</a-select-option>
           <a-select-option value="毛笔刷">毛笔刷</a-select-option>
         </a-select>
+        <a-slider v-model:value="colorConfig.size" :min="1" style="width: 200px"/>
       </div>
     </div>
     <div id="OCRTEXT">= v =</div>
