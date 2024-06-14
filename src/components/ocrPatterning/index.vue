@@ -164,7 +164,7 @@ onMounted(() => {
 });
 
 /**识别图像 */
-const ocrHandler = () => ocr(canvasElement.value!)
+const ocrCanvas = () => ocr(canvasElement.value!)
 /**清空画布*/
 const clear = () => clearCanvas(canvasElement.value!)
 
@@ -172,42 +172,12 @@ const clear = () => clearCanvas(canvasElement.value!)
 defineExpose({
   canvas: canvasElement,
   clear,
-  ocrHandler
+  ocrCanvas
 })
 </script>
 
 <style scoped lang="scss">
-::v-global(body) {
-  background-color: #e8e8e8;
-}
-
 .ocrCanvas {
   box-shadow: 0 0 5px 3px #ddd;
-}
-
-.op {
-  display: flex;
-  justify-content: space-between;
-
-  button {
-    padding: 6px 10px;
-    margin-right: 10px;
-    border: none;
-    color: #eee;
-    background-color: rgb(60, 141, 182);
-    border-radius: 2px;
-    cursor: pointer;
-  }
-
-  #OCRTEXT {
-    color: rgb(60, 141, 182);
-    background-color: #fff;
-    min-width: 400px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 30px;
-  }
-
 }
 </style>
