@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import type { pointType } from "./types/cv"
 import type { propsType } from "./types/props"
 import { shapeTypesMap } from "./constant/index"
@@ -41,7 +41,11 @@ onMounted(() => {
   (async () => {
     const canvas = canvasElement.value!;
     const ctx = canvas.getContext("2d")!;
-    initBrushTheme(ctx, props.brushOptions);
+
+    watch(() => props.brushOptions, () => {
+      initBrushTheme(ctx, props.brushOptions);
+    }, { deep: true, immediate: true })
+
     ctx.fillStyle = '#fff';
     ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
 

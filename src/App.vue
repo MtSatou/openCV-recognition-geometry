@@ -2,14 +2,18 @@
 import { ref } from "vue"
 import OcrPatterning from "./components/ocrPatterning/index.vue";
 // @ts-expect-error
-import CheckBox from "./components/checkbox.vue"
 import { pointType } from "./components/ocrPatterning/types/cv"
 import { drawCircle, drawShapeOnCanvas } from "./components/ocrPatterning/utils/draw"
+import type { brushOptions } from "./components/ocrPatterning/types/theme"
 
 const showCornerPoint = ref(false);
 const alwaysClosed = ref(false);
 const unknownFigureTransition = ref(false);
-const ocrRef = ref();
+const ocrRef = ref<any>(null);
+
+const ocr = () => ocrRef.value.ocrCanvas()
+const clear =  () => ocrRef.value.clear()
+const drawCircleHandler = () =>drawCircle(ocrRef.value.canvas, 150, 150, 100)
 const drawHandler = (points: pointType[]) => {
   drawShapeOnCanvas(ocrRef.value.canvas, points);
 }
@@ -24,6 +28,16 @@ const mouseupHandler = (evt: any) => {
     OCRTEXT.textContent = "未闭合：" + evt.ocr.length + "点"
   }
 }
+
+const colorConfig = ref<brushOptions>({
+  color: '#6699ee',
+  size: 3,
+  lineType: '虚线'
+})
+const colorChange = (evt: any) => {
+  console.log(evt)
+  // colorConfig.value.color = evt.target.value;
+}
 </script>
 
 <template>
@@ -35,63 +49,64 @@ const mouseupHandler = (evt: any) => {
     :style="{
       boxShadow: '0 0 5px 3px #ddd'
     }"
+    :brushOptions="colorConfig"
     @mouseup="mouseupHandler"
   ></OcrPatterning>
   <div class="op">
     <div>
       <div>
-        <button @click="drawHandler([
+        <a-button @click="drawHandler([
           { x: 100, y: 100 },
           { x: 200, y: 100 },
           { x: 150, y: 200 }
-        ])">绘制三角形</button>
+        ])">绘制三角形</a-button>
 
-        <button @click="drawHandler([
+        <a-button @click="drawHandler([
           { x: 100, y: 100 },
           { x: 200, y: 100 },
           { x: 200, y: 200 },
           { x: 100, y: 200 }
-        ])">绘制正方形</button>
+        ])">绘制正方形</a-button>
 
-        <button @click="drawHandler([
+        <a-button @click="drawHandler([
           { x: 100, y: 100 },
           { x: 250, y: 100 },
           { x: 250, y: 200 },
           { x: 100, y: 200 }
-        ])">绘制矩形</button>
+        ])">绘制矩形</a-button>
 
-        <button @click="drawHandler([
+        <a-button @click="drawHandler([
           { x: 150, y: 100 },
           { x: 220, y: 150 },
           { x: 150, y: 200 },
           { x: 80, y: 150 }
-        ])">绘制菱形</button>
+        ])">绘制菱形</a-button>
 
-        <button @click="drawHandler([
+        <a-button @click="drawHandler([
           { x: 120, y: 100 },
           { x: 160, y: 100 },
           { x: 220, y: 200 },
           { x: 80, y: 200 }
-        ])">绘制梯形</button>
+        ])">绘制梯形</a-button>
 
-        <button @click="drawHandler([
+        <a-button @click="drawHandler([
           { x: 150, y: 100 },
           { x: 200, y: 130 },
           { x: 180, y: 200 },
           { x: 120, y: 200 },
           { x: 100, y: 130 }
-        ])">绘制五边形</button>
+        ])">绘制五边形</a-button>
 
-        <button @click="drawHandler([
+        <a-button @click="drawHandler([
           { x: 150, y: 100 },
           { x: 200, y: 130 },
           { x: 200, y: 180 },
           { x: 150, y: 210 },
           { x: 100, y: 180 },
           { x: 100, y: 130 }
-        ])">绘制六边形</button>
+        ])">绘制六边形</a-button>
 
-        <button @click="drawHandler([
+        <a-button @click="drawHandler([
           { x: 150, y: 100 },
           { x: 170, y: 140 },
           { x: 220, y: 150 },
@@ -102,15 +117,24 @@ const mouseupHandler = (evt: any) => {
           { x: 120, y: 180 },
           { x: 80, y: 150 },
           { x: 130, y: 140 }
-        ])">绘制五角星</button>
-        <button @click="drawCircle(ocrRef.canvas as HTMLCanvasElement, 150, 150, 100)">绘制圆形</button>
+        ])">绘制五角星</a-button>
+        <a-button @click="drawCircleHandler">绘制圆形</a-button>
       </div>
       <div style="display: flex; margin-top: 10px; align-items: center;">
-        <button @click="ocrRef.ocrCanvas" style="background: #f74">校验</button>
-        <button @click="ocrRef.clear">清空画布</button>
-        <CheckBox v-model="showCornerPoint" label="线段角点"></CheckBox>
-        <CheckBox v-model="alwaysClosed" label="总是闭合"></CheckBox>
-        <CheckBox v-model="unknownFigureTransition" label="未知图形不转化"></CheckBox>
+        <a-button @click="ocr">校验</a-button>
+        <a-button @click="clear">清空画布</a-button>
+        <a-checkbox v-model:checked="showCornerPoint">线段角点</a-checkbox>
+        <a-checkbox v-model:checked="alwaysClosed">总是闭合</a-checkbox>
+        <a-checkbox v-model:checked="unknownFigureTransition">未知图形不转化</a-checkbox>
+        <a-input v-model:value="colorConfig.color" type="color" @change="colorChange" style="width: 50px"/>
+        <a-select
+          v-model:value="colorConfig.lineType"
+          style="width: 120px"
+        >
+          <a-select-option value="实线">实线</a-select-option>
+          <a-select-option value="虚线">虚线</a-select-option>
+          <a-select-option value="毛笔刷">毛笔刷</a-select-option>
+        </a-select>
       </div>
     </div>
     <div id="OCRTEXT">= v =</div>
@@ -122,19 +146,15 @@ const mouseupHandler = (evt: any) => {
   background-color: #e8e8e8;
 }
 
+::v-deep() {
+  button, input {
+    margin-right: 10px;
+  }
+}
+
 .op {
   display: flex;
   justify-content: space-between;
-
-  button {
-    padding: 6px 10px;
-    margin-right: 10px;
-    border: none;
-    color: #eee;
-    background-color: rgb(60, 141, 182);
-    border-radius: 2px;
-    cursor: pointer;
-  }
 
   #OCRTEXT {
     color: rgb(60, 141, 182);
