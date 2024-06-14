@@ -1,6 +1,6 @@
 import { lineTypeMap } from "../constant"
 
-export type lineType = `${lineTypeMap}`;
+export declare type lineType = `${lineTypeMap}`;
 
 export declare interface brushOptions {
   /**画笔颜色 */

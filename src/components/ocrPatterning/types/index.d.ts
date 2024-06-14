@@ -4,7 +4,8 @@ export declare interface pointType {
   y: number;
 }
 
-export type shapeTypes = `${shapeTypesMap}`;
+export declare type shapeTypes = `${shapeTypesMap}`;
+
 export declare interface usingTypes {
   type: shapeTypes;
   rect: { x: number; y: number; width: number; height: number };
