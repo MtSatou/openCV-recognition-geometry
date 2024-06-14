@@ -5,4 +5,8 @@ export declare interface propsType {
   showCornerPoint: boolean;
   /**未知图形不转换 */
   unknownFigureTransition: boolean;
+  /**画布宽度 */
+  width: number | string;
+  /**画布高度 */
+  height: number | string;
 } 

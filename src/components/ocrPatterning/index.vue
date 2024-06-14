@@ -1,6 +1,10 @@
 <template>
-  <canvas ref="canvasElement" class="ocrCanvas" :width="innerWidth - 15 + 'px'"
-    :height="innerHeight - 120 + 'px'"></canvas>
+  <canvas 
+    ref="canvasElement" 
+    class="ocrCanvas" 
+    :width="typeof width === 'number' ? width + 'px' : width"
+    :height="typeof height === 'number' ? height + 'px' : height"
+  ></canvas>
 </template>
 
 <script lang="ts" setup>
@@ -28,6 +32,8 @@ const props = withDefaults(defineProps<propsType>(), {
   alwaysClosed: false,
   showCornerPoint: false,
   unknownFigureTransition: false,
+  width: innerWidth - 15 + 'px',
+  height: innerHeight - 120 + 'px'
 })
 
 onMounted(() => {
@@ -97,17 +103,17 @@ onMounted(() => {
           const { center, radius } = createCircleFromPoints(mostFrequentShape.vertices);
           clearCanvas(canvas);
           drawCircle(canvas, center.x, center.y, radius);
-        } 
+        }
         // 特殊处理：矩形
         else if (mostFrequentShape?.type === shapeTypesMap.Rectangle) {
           clearCanvas(canvas);
           drawRectangleFromPoints(canvas, mostFrequentShape.vertices);
-        } 
+        }
         // 特殊处理：正方形
         else if (mostFrequentShape?.type === shapeTypesMap.Square) {
           clearCanvas(canvas);
           drawSquareFromPoints(canvas, mostFrequentShape.vertices);
-        } 
+        }
         // 特殊处理：五角星
         else if (mostFrequentShape?.type === shapeTypesMap.Star) {
           const corners = filterDensePoints(points)
@@ -158,23 +164,10 @@ onMounted(() => {
   })();
 });
 
-/**设置识别文字 */
-const setTEXT = (text: string) => {
-  // @ts-expect-error
-  OCRTEXT.textContent = text;
-}
-
 /**识别图像 */
-const ocrHandler = () => {
-  const data = ocr(canvasElement.value!)
-  setTEXT(data?.type!)
-}
-
+const ocrHandler = ocr(canvasElement.value!)
 /**清空画布*/
-const clear = () => {
-  setTEXT("= v =")
-  clearCanvas(canvasElement.value!)
-}
+const clear = () => clearCanvas(canvasElement.value!)
 
 /**暴露属性 */
 defineExpose({
