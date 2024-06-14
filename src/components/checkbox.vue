@@ -8,7 +8,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from "vue"
 const emit = defineEmits(["update:modelValue"])
 const props = defineProps({
@@ -22,7 +22,7 @@ const props = defineProps({
   }
 })
 
-const checked = computed({
+const checked = computed<boolean>({
   set(value) {
     emit("update:modelValue", value)
   },
@@ -31,7 +31,7 @@ const checked = computed({
   }
 })
 
-const inputChange = (evt) => {
+const inputChange = (evt: any) => {
   emit("update:modelValue", evt.target.checked)
 }
 </script>
