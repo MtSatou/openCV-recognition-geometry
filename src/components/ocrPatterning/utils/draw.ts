@@ -1,5 +1,5 @@
 // 绘制正基本图形
-import { pointType } from "../types";
+import { pointType } from "../types/cv";
 import theme from "../theme"
 
 // 清空画布
@@ -19,7 +19,7 @@ export function drawLine(
   ctx.beginPath();
   ctx.moveTo(pointA.x, pointA.y);
   ctx.lineTo(pointB.x, pointB.y); 
-  ctx.strokeStyle = theme.lineColor;
+  ctx.strokeStyle = theme.color;
   ctx.stroke();
 }
 
@@ -34,7 +34,7 @@ export function drawCircle(
 
   ctx.beginPath();
   ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-  ctx.strokeStyle = theme.lineColor;
+  ctx.strokeStyle = theme.color;
   ctx.stroke();
 }
 
@@ -54,7 +54,7 @@ export function drawShapeOnCanvas(ctx: CanvasRenderingContext2D, shape: pointTyp
   }
 
   ctx.lineTo(startPoint.x, startPoint.y);
-  ctx.strokeStyle = theme.lineColor;
+  ctx.strokeStyle = theme.color;
   ctx.stroke();
 }
 
@@ -75,7 +75,7 @@ export function drawSquareFromPoints(ctx: CanvasRenderingContext2D, points: poin
 
   ctx.beginPath();
   ctx.rect(minX, minY, side, side);
-  ctx.strokeStyle = theme.lineColor;
+  ctx.strokeStyle = theme.color;
   ctx.stroke();
 }
 
@@ -97,7 +97,7 @@ export function drawRectangleFromPoints(ctx: CanvasRenderingContext2D, shape: po
 
   ctx.beginPath();
   ctx.rect(minX, minY, width, height);
-  ctx.strokeStyle = theme.lineColor;
+  ctx.strokeStyle = theme.color;
   ctx.stroke();
 }
 
@@ -115,6 +115,6 @@ export function drawShapeFromPoints(ctx: CanvasRenderingContext2D, points: point
   }
   closePath && ctx.closePath();
 
-  ctx.strokeStyle = theme.lineColor;
+  ctx.strokeStyle = theme.color;
   ctx.stroke(); // 绘制连接的直线
 }

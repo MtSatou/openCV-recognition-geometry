@@ -1,4 +1,4 @@
-import { usingTypes, pointType } from "../types";
+import { usingTypes, pointType } from "../types/cv";
 
 // @ts-expect-error
 const cv = window.cv!;

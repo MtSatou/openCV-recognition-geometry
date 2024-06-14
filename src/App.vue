@@ -3,7 +3,7 @@ import { ref } from "vue"
 import OcrPatterning from "./components/ocrPatterning/index.vue";
 // @ts-expect-error
 import CheckBox from "./components/checkbox.vue"
-import { pointType } from "./components/ocrPatterning/types"
+import { pointType } from "./components/ocrPatterning/types/cv"
 import { drawCircle, drawShapeOnCanvas } from "./components/ocrPatterning/utils/draw"
 
 const showCornerPoint = ref(false);
