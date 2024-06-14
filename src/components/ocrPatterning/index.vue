@@ -9,7 +9,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
-import type { pointType } from "./types"
+import type { pointType } from "./types/cv"
 import type { propsType } from "./types/props"
 import { shapeTypesMap } from "./constant/index"
 import { ocr, isClosedShape, createCircleFromPoints, filterDensePoints } from "./utils/openCV"
@@ -21,6 +21,7 @@ import {
   drawRectangleFromPoints,
   drawShapeFromPoints
 } from "./utils/draw"
+import { initBrushTheme } from "./theme"
 
 const emit = defineEmits(["mousedown", "mousemove", "mouseup"])
 
@@ -32,13 +33,15 @@ const props = withDefaults(defineProps<propsType>(), {
   showCornerPoint: false,
   unknownFigureTransition: false,
   width: window.innerWidth - 15 + 'px',
-  height: window.innerHeight - 120 + 'px'
+  height: window.innerHeight - 120 + 'px',
+  // brushOptions: {}
 })
 
 onMounted(() => {
   (async () => {
     const canvas = canvasElement.value!;
     const ctx = canvas.getContext("2d")!;
+    initBrushTheme(ctx, props.brushOptions);
     ctx.fillStyle = '#fff';
     ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
 
@@ -83,6 +86,7 @@ onMounted(() => {
           // 闭合
           isClosedShape: true
         })
+
         if (!mostFrequentShape) {
           return;
         }

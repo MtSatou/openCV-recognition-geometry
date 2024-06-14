@@ -1,3 +1,4 @@
+import { brushOptions } from "./theme"
 export declare interface propsType {
   /**自动闭合 */
   alwaysClosed: boolean;
@@ -9,4 +10,6 @@ export declare interface propsType {
   width: number | string;
   /**画布高度 */
   height: number | string;
+  /**画笔设置 */
+  brushOptions: brushOptions
 } 
