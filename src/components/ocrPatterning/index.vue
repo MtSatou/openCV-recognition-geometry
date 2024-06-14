@@ -95,38 +95,38 @@ onMounted(() => {
           }
           const corners = filterDensePoints(points)
           clearCanvas(canvas);
-          drawShapeFromPoints(canvas, corners, true)
+          drawShapeFromPoints(ctx, corners, true)
         }
         // 特殊处理：圆形
         else if (mostFrequentShape.type === shapeTypesMap.Circle) {
           const { center, radius } = createCircleFromPoints(mostFrequentShape.vertices);
           clearCanvas(canvas);
-          drawCircle(canvas, center.x, center.y, radius);
+          drawCircle(ctx, center.x, center.y, radius);
         }
         // 特殊处理：矩形
         else if (mostFrequentShape?.type === shapeTypesMap.Rectangle) {
           clearCanvas(canvas);
-          drawRectangleFromPoints(canvas, mostFrequentShape.vertices);
+          drawRectangleFromPoints(ctx, mostFrequentShape.vertices);
         }
         // 特殊处理：正方形
         else if (mostFrequentShape?.type === shapeTypesMap.Square) {
           clearCanvas(canvas);
-          drawSquareFromPoints(canvas, mostFrequentShape.vertices);
+          drawSquareFromPoints(ctx, mostFrequentShape.vertices);
         }
         // 特殊处理：五角星
         else if (mostFrequentShape?.type === shapeTypesMap.Star) {
           const corners = filterDensePoints(points)
           clearCanvas(canvas);
-          drawShapeFromPoints(canvas, corners)
+          drawShapeFromPoints(ctx, corners)
         } else {
           clearCanvas(canvas);
-          drawShapeOnCanvas(canvas, mostFrequentShape.vertices);
+          drawShapeOnCanvas(ctx, mostFrequentShape.vertices);
         }
       } else {
         // 未闭合图形（线段）
         const corners = filterDensePoints(points)
         clearCanvas(canvas);
-        drawShapeFromPoints(canvas, corners)
+        drawShapeFromPoints(ctx, corners)
         emit("mouseup", {
           event,
           ocr: corners,
@@ -136,7 +136,7 @@ onMounted(() => {
         // 显示角点
         if (props.showCornerPoint) {
           for (const c of corners) {
-            drawCircle(canvasElement.value!, c.x, c.y, 5)
+            drawCircle(ctx, c.x, c.y, 5)
           }
         }
       }

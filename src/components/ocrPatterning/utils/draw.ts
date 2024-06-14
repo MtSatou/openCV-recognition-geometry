@@ -1,9 +1,6 @@
 // 绘制正基本图形
 import { pointType } from "../types";
-
-const config = {
-  lineColor: "#6699ee"
-}
+import theme from "../theme"
 
 // 清空画布
 export function clearCanvas(canvas: HTMLCanvasElement) {
@@ -14,38 +11,38 @@ export function clearCanvas(canvas: HTMLCanvasElement) {
 
 // 绘制直线
 export function drawLine(
-  canvas: HTMLCanvasElement,
+  ctx: CanvasRenderingContext2D,
   pointA: pointType,
   pointB: pointType
 ) {
-  const ctx = canvas.getContext("2d")!;
+  
   ctx.beginPath();
   ctx.moveTo(pointA.x, pointA.y);
   ctx.lineTo(pointB.x, pointB.y); 
-  ctx.strokeStyle = config.lineColor;
+  ctx.strokeStyle = theme.lineColor;
   ctx.stroke();
 }
 
 // 画圆
 export function drawCircle(
-  canvas: HTMLCanvasElement,
+  ctx: CanvasRenderingContext2D,
   centerX: number,
   centerY: number,
   radius: number,
 ) {
-  const ctx = canvas.getContext("2d")!;
+  
 
   ctx.beginPath();
   ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-  ctx.strokeStyle = config.lineColor;
+  ctx.strokeStyle = theme.lineColor;
   ctx.stroke();
 }
 
 // 绘制顶点坐标图（多边形）
-export function drawShapeOnCanvas(canvas: HTMLCanvasElement, shape: pointType[]) {
+export function drawShapeOnCanvas(ctx: CanvasRenderingContext2D, shape: pointType[]) {
   if (!shape || !shape.length) return;
 
-  const ctx = canvas.getContext("2d")!;
+  
 
   ctx.beginPath();
   const startPoint = shape[0];
@@ -57,13 +54,13 @@ export function drawShapeOnCanvas(canvas: HTMLCanvasElement, shape: pointType[])
   }
 
   ctx.lineTo(startPoint.x, startPoint.y);
-  ctx.strokeStyle = config.lineColor;
+  ctx.strokeStyle = theme.lineColor;
   ctx.stroke();
 }
 
 // 绘制顶点坐标正方形
-export function drawSquareFromPoints(canvas: HTMLCanvasElement, points: pointType[]) {
-  const ctx = canvas.getContext("2d")!;
+export function drawSquareFromPoints(ctx: CanvasRenderingContext2D, points: pointType[]) {
+  
   if (points.length < 4) return;
 
   // 找到最小和最大 x 和 y 值
@@ -78,13 +75,13 @@ export function drawSquareFromPoints(canvas: HTMLCanvasElement, points: pointTyp
 
   ctx.beginPath();
   ctx.rect(minX, minY, side, side);
-  ctx.strokeStyle = config.lineColor;
+  ctx.strokeStyle = theme.lineColor;
   ctx.stroke();
 }
 
 // 绘制顶点坐标矩形
-export function drawRectangleFromPoints(canvas: HTMLCanvasElement, shape: pointType[]) {
-  const ctx = canvas.getContext("2d")!;
+export function drawRectangleFromPoints(ctx: CanvasRenderingContext2D, shape: pointType[]) {
+  
   if (shape.length < 4) return;
 
   // 找到最小和最大 x 和 y 值
@@ -100,13 +97,13 @@ export function drawRectangleFromPoints(canvas: HTMLCanvasElement, shape: pointT
 
   ctx.beginPath();
   ctx.rect(minX, minY, width, height);
-  ctx.strokeStyle = config.lineColor;
+  ctx.strokeStyle = theme.lineColor;
   ctx.stroke();
 }
 
 // 绘制顶点坐标链接形状（未知图形 or 线）
-export function drawShapeFromPoints(canvas: HTMLCanvasElement, points: pointType[], closePath: boolean = false){
-  const ctx = canvas.getContext("2d")!;
+export function drawShapeFromPoints(ctx: CanvasRenderingContext2D, points: pointType[], closePath: boolean = false){
+  
   if (points.length < 2) return;
 
   ctx.beginPath();
@@ -118,6 +115,6 @@ export function drawShapeFromPoints(canvas: HTMLCanvasElement, points: pointType
   }
   closePath && ctx.closePath();
 
-  ctx.strokeStyle = config.lineColor;
+  ctx.strokeStyle = theme.lineColor;
   ctx.stroke(); // 绘制连接的直线
 }
