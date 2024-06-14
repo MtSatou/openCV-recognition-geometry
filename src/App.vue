@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue"
 import OcrPatterning from "./components/ocrPatterning/index.vue";
-// @ts-expect-error
 import { pointType } from "./components/ocrPatterning/types/cv"
 import { drawCircle, drawShapeOnCanvas } from "./components/ocrPatterning/utils/draw"
 import type { brushOptions } from "./components/ocrPatterning/types/theme"
@@ -11,11 +10,20 @@ const alwaysClosed = ref(false);
 const unknownFigureTransition = ref(false);
 const ocrRef = ref<any>(null);
 
-const ocr = () => ocrRef.value.ocrCanvas()
-const clear =  () => ocrRef.value.clear()
-const drawCircleHandler = () =>drawCircle(ocrRef.value.canvas, 150, 150, 100)
+const ocr = () => {
+  const data = ocrRef.value.ocrCanvas()
+  // @ts-expect-error
+  OCRTEXT.textContent = data.type
+}
+const clear =  () => {
+  ocrRef.value.clear()
+  // @ts-expect-error
+  OCRTEXT.textContent = "= v ="
+}
+const drawCircleHandler = () => drawCircle(ocrRef.value.canvas, 150, 150, 100)
 const drawHandler = (points: pointType[]) => {
-  drawShapeOnCanvas(ocrRef.value.canvas, points);
+  const ctx = ocrRef.value.canvas.getContext("2d");
+  drawShapeOnCanvas(ctx, points);
 }
 
 const mouseupHandler = (evt: any) => {
@@ -129,7 +137,8 @@ const colorConfig = ref<brushOptions>({
         >
           <a-select-option value="实线">实线</a-select-option>
           <a-select-option value="虚线">虚线</a-select-option>
-          <a-select-option value="毛笔刷">毛笔刷</a-select-option>
+          <a-select-option value="毛笔" disabled>毛笔</a-select-option>
+          <a-select-option value="激光笔">激光笔</a-select-option>
         </a-select>
         <a-slider v-model:value="colorConfig.size" :min="1" style="width: 200px"/>
       </div>

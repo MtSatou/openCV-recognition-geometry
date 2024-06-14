@@ -11,7 +11,7 @@
 import { ref, onMounted, watch } from "vue";
 import type { pointType } from "./types/cv"
 import type { propsType } from "./types/props"
-import { shapeTypesMap } from "./constant/index"
+import { shapeTypesMap, lineTypeMap } from "./constant/index"
 import { ocr, isClosedShape, createCircleFromPoints, filterDensePoints } from "./utils/openCV"
 import {
   clearCanvas,
@@ -76,6 +76,13 @@ onMounted(() => {
 
     canvas.addEventListener("mouseup", (event) => {
       drawing = false;
+      // 如果是毛笔刷或激光笔，则不走识别
+      if (
+        props.brushOptions.lineType === lineTypeMap.Pen_Brush || 
+        props.brushOptions.lineType === lineTypeMap.Pen_Laser 
+      ) {
+        return
+      } 
       // 总是闭合
       if (props.alwaysClosed) {
         points.push(points[0]);
