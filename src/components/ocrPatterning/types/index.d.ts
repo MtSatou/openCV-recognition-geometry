@@ -1,19 +1,10 @@
+import { shapeTypesMap } from "../constant"
 export declare interface pointType {
   x: number;
   y: number;
 }
 
-export declare type shapeTypes =
-  | "三角形"
-  | "菱形"
-  | "正方形"
-  | "梯形"
-  | "矩形"
-  | "五边形"
-  | "五角星"
-  | "六边形"
-  | "圆形"
-  | "未知";
+export type shapeTypes = `${shapeTypesMap}`;
 export declare interface usingTypes {
   type: shapeTypes;
   rect: { x: number; y: number; width: number; height: number };

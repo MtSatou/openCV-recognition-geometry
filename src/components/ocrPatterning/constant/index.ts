@@ -1,3 +1,4 @@
+
 export enum shapeTypesMap {
   Triangle = "三角形",
   Diamond = "菱形",
@@ -9,4 +10,10 @@ export enum shapeTypesMap {
   Hexagon = "六边形",
   Circle = "圆形",
   Unknown = "未知"
+} 
+
+export enum lineTypeMap {
+  Line_Straight = "直线",
+  Line_broken = "虚线",
+  Brush_Pen = "毛笔刷",
 }
