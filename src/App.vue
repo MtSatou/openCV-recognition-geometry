@@ -20,7 +20,7 @@ const clear =  () => {
   // @ts-expect-error
   OCRTEXT.textContent = "= v ="
 }
-const drawCircleHandler = () => drawCircle(ocrRef.value.canvas, 150, 150, 100)
+const drawCircleHandler = () => drawCircle(ocrRef.value.canvas.getContext("2d"), 150, 150, 100)
 const drawHandler = (points: pointType[]) => {
   const ctx = ocrRef.value.canvas.getContext("2d");
   drawShapeOnCanvas(ctx, points);
