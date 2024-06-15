@@ -7,7 +7,7 @@ import type { brushOptions } from "./components/ocrPatterning/types/theme"
 
 const showCornerPoint = ref(false);
 const alwaysClosed = ref(false);
-const unknownFigureTransition = ref(false);
+const disableIdentification = ref(false);
 const ocrRef = ref<any>(null);
 
 const ocr = () => {
@@ -49,7 +49,7 @@ const colorConfig = ref<brushOptions>({
     ref="ocrRef" 
     :showCornerPoint="showCornerPoint" 
     :alwaysClosed="alwaysClosed" 
-    :unknownFigureTransition="unknownFigureTransition" 
+    :disableIdentification="disableIdentification" 
     :style="{
       boxShadow: '0 0 5px 3px #ddd'
     }"
@@ -129,7 +129,7 @@ const colorConfig = ref<brushOptions>({
         <a-button @click="clear">清空画布</a-button>
         <a-checkbox v-model:checked="showCornerPoint">线段角点</a-checkbox>
         <a-checkbox v-model:checked="alwaysClosed">总是闭合</a-checkbox>
-        <a-checkbox v-model:checked="unknownFigureTransition">未知图形不转化</a-checkbox>
+        <a-checkbox v-model:checked="disableIdentification">禁用识别</a-checkbox>
         <a-input v-model:value="colorConfig.color" type="color" style="width: 50px"/>
         <a-select
           v-model:value="colorConfig.lineType"

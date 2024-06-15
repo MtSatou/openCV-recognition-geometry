@@ -31,7 +31,7 @@ const canvasElement = ref<HTMLCanvasElement>()!;
 const props = withDefaults(defineProps<propsType>(), {
   alwaysClosed: false,
   showCornerPoint: false,
-  unknownFigureTransition: false,
+  disableIdentification: false,
   width: window.innerWidth - 15 + 'px',
   height: window.innerHeight - 120 + 'px',
   // brushOptions: {}
@@ -76,6 +76,10 @@ onMounted(() => {
 
     canvas.addEventListener("mouseup", (event) => {
       drawing = false;
+      // 禁用识别
+      if (props.disableIdentification) {
+        return;
+      }
       // 如果是毛笔刷或激光笔，则不走识别
       if (
         props.brushOptions.lineType === lineTypeMap.Pen_Brush || 
@@ -104,10 +108,6 @@ onMounted(() => {
 
         // 未知图形直接获取所有顶点坐标以直线连接
         if (mostFrequentShape.type === shapeTypesMap.Unknown) {
-          // 勾选了未知图形不转化
-          if (props.unknownFigureTransition) {
-            return
-          }
           const corners = filterDensePoints(points)
           clearCanvas(canvas);
           drawShapeFromPoints(ctx, corners, true)
@@ -138,6 +138,10 @@ onMounted(() => {
           drawShapeOnCanvas(ctx, mostFrequentShape.vertices);
         }
       } else {
+        // 禁用识别
+        if (props.disableIdentification) {
+          return;
+        }
         // 未闭合图形（线段）
         const corners = filterDensePoints(points)
         clearCanvas(canvas);
