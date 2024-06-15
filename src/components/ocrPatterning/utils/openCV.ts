@@ -391,8 +391,8 @@ export function calculateAngle(v1: [number, number], v2: [number, number]): numb
  */
 export function findCorners(
   points: pointType[],
-  angleThreshold: number = 30,
-  minInterval: number = 5
+  angleThreshold: number = 10,
+  minInterval: number = 1
 ): pointType[] {
   if (points.length < 3) {
     return [];
