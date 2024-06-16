@@ -70,11 +70,12 @@ export const initTheme = (
   };
   ctx.strokeStyle = color!;
   ctx.lineWidth = size!;
+  ctx.fillStyle = defaultCanvasOptions.fillColor;
+  ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
   // 实线
   if (lineType === lineTypeMap.Line_Straight) {
-    let points: pointType[] = [];
     ctx.setLineDash([]);
-    draw(ctx, ctx.canvas, points, props);
   }
   // 虚线
   else if (lineType === lineTypeMap.Line_broken) {
