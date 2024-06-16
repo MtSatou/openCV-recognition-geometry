@@ -34,7 +34,7 @@ class Line implements Line {
   }
 }
 
-export default class HandwritingSelf {
+export class HandwritingSelf {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
   line: Line;

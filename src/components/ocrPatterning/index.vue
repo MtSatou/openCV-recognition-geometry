@@ -9,13 +9,11 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, watch } from "vue";
-import type { propsType } from "./types/props"
 import { ocr } from "./utils/openCV"
-import {
-  clearCanvas,
-} from "./utils/draw"
+import { clearCanvas } from "./utils/draw"
 import { useTheme, initBrushTheme } from "./theme"
 import { defaultBrushOptions } from "./config"
+import type { propsType } from "./types/props"
 
 const emit = defineEmits(["mousedown", "mousemove", "mouseup"])
 
