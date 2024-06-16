@@ -93,7 +93,9 @@ export default class HandwritingSelf {
   }
 
   draw(isUp: boolean = false) {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    // this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.fillStyle = "#fff";
+    this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
     this.pointLines.forEach((line) => {
       let points = line.points;
