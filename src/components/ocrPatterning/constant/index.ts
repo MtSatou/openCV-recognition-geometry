@@ -15,6 +15,10 @@ export enum shapeTypesMap {
 export enum lineTypeMap {
   Line_Straight = "实线",
   Line_broken = "虚线",
+}
+
+export enum PenTypeMap {
+  Pencil = "铅笔",
   Pen_Brush = "毛笔",
   Pen_Smart = "智能笔",
   Pen_Laser = "激光笔",

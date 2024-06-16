@@ -1,6 +1,7 @@
-import { lineTypeMap } from "../constant"
+import { lineTypeMap, PenTypeMap } from "../constant"
 
 export declare type lineType = `${lineTypeMap}`;
+export declare type PenType = `${PenTypeMap}`;
 
 export declare interface brushOptions {
   /**画笔颜色 */
@@ -9,4 +10,6 @@ export declare interface brushOptions {
   size?: number;
   /**线段类型 */
   lineType?: lineType
+  /**笔类型 */
+  PenType?: PenType
 }

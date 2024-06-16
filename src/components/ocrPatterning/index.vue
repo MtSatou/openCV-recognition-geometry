@@ -11,7 +11,7 @@
 import { ref, onMounted, watch } from "vue";
 import { ocr } from "./utils/openCV"
 import { clearCanvas } from "./utils/draw"
-import { useTheme, initBrushTheme } from "./theme"
+import { initTheme } from "./theme"
 import { defaultBrushOptions } from "./config"
 import type { propsType } from "./types/props"
 
@@ -34,10 +34,8 @@ onMounted(() => {
 
   watch(() => props.brushOptions, () => {
     Object.assign(defaultBrushOptions, props.brushOptions);
-    initBrushTheme(ctx, props.brushOptions);
+    initTheme(ctx, props, emit, props.brushOptions);
   }, { deep: true, immediate: true })
-
-  useTheme(canvas, props, emit);
 });
 
 /**识别图像 */
