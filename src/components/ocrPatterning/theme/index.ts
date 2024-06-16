@@ -85,7 +85,7 @@ export const initTheme = (
   if (penType === PenTypeMap.Pencil) {
     let drawing = false;
     let points: pointType[] = [];
-    ctx.canvas.onmousedown = (event) => {
+    ctx.canvas.onmousedown = () => {
       drawing = true;
       points = [];
     };
@@ -97,7 +97,7 @@ export const initTheme = (
       points.push({ x, y });
       draw(ctx, ctx.canvas, points, props);
     };
-    ctx.canvas.onmouseup = (event) => {
+    ctx.canvas.onmouseup = () => {
       drawing = false;
     }
   }
