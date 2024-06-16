@@ -30,7 +30,7 @@ class Line implements Line {
   constructor() {
     this.points = new Array();
     this.changeWidthCount = 0;
-    this.lineWidth = 100;
+    this.lineWidth = defaultCanvasOptions.size as number;
   }
 }
 
@@ -64,7 +64,7 @@ export class HandwritingSelf {
   down(x: number, y: number) {
     this.isDown = true;
     this.line = new Line();
-    this.line.lineWidth = this.lineWidth;
+    this.line.lineWidth = defaultCanvasOptions.size as number;
     let currentPoint = new Point(x, y, Date.now());
     this.addPoint(currentPoint);
 
@@ -93,7 +93,7 @@ export class HandwritingSelf {
   }
 
   draw(isUp: boolean = false) {
-    // this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.fillStyle = defaultCanvasOptions.fillColor;
     this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
