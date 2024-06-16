@@ -39,6 +39,7 @@ function draw(
   ctx.fillStyle = defaultCanvasOptions.fillColor;
   ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
   if (points.length === 0) return;
+  ctx.lineWidth = defaultCanvasOptions.size as number;
   ctx.beginPath();
   ctx.moveTo(points[0].x, points[0].y);
   for (let i = 1; i < points.length; i++) {
