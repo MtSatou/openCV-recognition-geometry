@@ -11,7 +11,6 @@
 <script lang="ts" setup>
 import { ref, onMounted, watch, nextTick } from "vue";
 import { ocr } from "./utils/openCV"
-import { clearCanvas } from "./utils/draw"
 import { initTheme } from "./theme"
 import { defaultCanvasOptions } from "./config"
 import type { propsType } from "./types/props"
