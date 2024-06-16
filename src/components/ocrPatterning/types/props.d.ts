@@ -4,8 +4,6 @@ export declare interface propsType {
   alwaysClosed: boolean;
   /**线段显示角点 */
   showCornerPoint: boolean;
-  /**禁用识别 */
-  disableIdentification: boolean;
   /**画布宽度 */
   width: number | string;
   /**画布高度 */

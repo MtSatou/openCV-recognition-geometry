@@ -31,7 +31,6 @@ const canvasElement = ref<HTMLCanvasElement>()!;
 const props = withDefaults(defineProps<propsType>(), {
   alwaysClosed: false,
   showCornerPoint: false,
-  disableIdentification: false,
   width: window.innerWidth - 15 + 'px',
   height: window.innerHeight - 120 + 'px',
   // brushOptions: {}
@@ -76,17 +75,10 @@ onMounted(() => {
 
     canvas.addEventListener("mouseup", (event) => {
       drawing = false;
-      // 禁用识别
-      if (props.disableIdentification) {
+      // 只有智能笔才能识别
+      if (props.brushOptions.lineType !== lineTypeMap.Pen_Smart) {
         return;
       }
-      // 如果是毛笔刷或激光笔，则不走识别
-      if (
-        props.brushOptions.lineType === lineTypeMap.Pen_Brush || 
-        props.brushOptions.lineType === lineTypeMap.Pen_Laser 
-      ) {
-        return
-      } 
       // 总是闭合
       if (props.alwaysClosed) {
         points.push(points[0]);
@@ -138,10 +130,6 @@ onMounted(() => {
           drawShapeOnCanvas(ctx, mostFrequentShape.vertices);
         }
       } else {
-        // 禁用识别
-        if (props.disableIdentification) {
-          return;
-        }
         // 未闭合图形（线段）
         const corners = filterDensePoints(points)
         clearCanvas(canvas);
