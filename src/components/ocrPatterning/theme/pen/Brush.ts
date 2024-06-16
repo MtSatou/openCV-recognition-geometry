@@ -351,6 +351,8 @@ export class HandwritingSelf {
   }
   clear() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.fillStyle = defaultCanvasOptions.fillColor;
+    this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     this.pointLines = [];
     this.line = new Line();
     this.begin = null;

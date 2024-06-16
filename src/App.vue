@@ -42,7 +42,7 @@ const colorConfig = ref<brushOptions>({
   size: 3,
   lineType: '实线',
   penType: '铅笔',
-  fillColor: "#00000000"
+  fillColor: "#fff"
 })
 </script>
 
