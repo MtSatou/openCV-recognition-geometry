@@ -1,5 +1,5 @@
 // 笔（笔锋）
-import { defaultBrushOptions } from "../index"
+import { defaultBrushOptions } from "../../config"
 interface Point {
   x: number;
   y: number;

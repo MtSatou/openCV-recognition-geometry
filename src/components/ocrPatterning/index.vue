@@ -14,7 +14,8 @@ import { ocr } from "./utils/openCV"
 import {
   clearCanvas,
 } from "./utils/draw"
-import { useTheme, initBrushTheme, defaultBrushOptions } from "./theme"
+import { useTheme, initBrushTheme } from "./theme"
+import { defaultBrushOptions } from "./config"
 
 const emit = defineEmits(["mousedown", "mousemove", "mouseup"])
 
@@ -30,17 +31,15 @@ const props = withDefaults(defineProps<propsType>(), {
 })
 
 onMounted(() => {
-  (async () => {
-    const canvas = canvasElement.value!;
-    const ctx = canvas.getContext("2d")!;
+  const canvas = canvasElement.value!;
+  const ctx = canvas.getContext("2d")!;
 
-    watch(() => props.brushOptions, () => {
-      Object.assign(defaultBrushOptions, props.brushOptions);
-      initBrushTheme(ctx, props.brushOptions);
-    }, { deep: true, immediate: true })
+  watch(() => props.brushOptions, () => {
+    Object.assign(defaultBrushOptions, props.brushOptions);
+    initBrushTheme(ctx, props.brushOptions);
+  }, { deep: true, immediate: true })
 
-    useTheme(canvas, props, emit);
-  })();
+  useTheme(canvas, props, emit);
 });
 
 /**识别图像 */

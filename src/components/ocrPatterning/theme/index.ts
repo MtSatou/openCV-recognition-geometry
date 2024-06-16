@@ -1,8 +1,8 @@
-import type { brushOptions } from "../types/theme";
 import HandwritingSelf from "./pen/Brush";
-
 import type { pointType } from "../types/cv"
 import type { propsType } from "../types/props"
+import type { brushOptions } from "../types/theme";
+import { defaultBrushOptions } from "../config"
 import { shapeTypesMap, lineTypeMap } from "../constant/index"
 import { ocr, isClosedShape, createCircleFromPoints, filterDensePoints } from "../utils/openCV"
 import {
@@ -13,12 +13,6 @@ import {
   drawRectangleFromPoints,
   drawShapeFromPoints
 } from "../utils/draw"
-
-export const defaultBrushOptions: brushOptions = {
-  color: "#6699ee",
-  size: 10,
-  lineType: lineTypeMap.Line_Straight,
-};
 
 /**
  * 初始化画笔主题
@@ -289,4 +283,3 @@ export const useTheme = (
   }
 };
 
-export default defaultBrushOptions;
