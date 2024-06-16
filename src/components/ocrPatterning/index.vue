@@ -13,7 +13,7 @@ import { ref, onMounted, watch, nextTick } from "vue";
 import { ocr } from "./utils/openCV"
 import { clearCanvas } from "./utils/draw"
 import { initTheme } from "./theme"
-import { defaultBrushOptions } from "./config"
+import { defaultCanvasOptions } from "./config"
 import type { propsType } from "./types/props"
 
 const emit = defineEmits(["mousedown", "mousemove", "mouseup"])
@@ -35,7 +35,7 @@ onMounted(() => {
   const ctx = canvas.getContext("2d")!;
 
   watch(() => props.brushOptions, () => {
-    Object.assign(defaultBrushOptions, props.brushOptions);
+    Object.assign(defaultCanvasOptions, props.brushOptions);
     initTheme(ctx, props, emit, props.brushOptions);
   }, { deep: true, immediate: true })
 });
@@ -50,7 +50,7 @@ const reload = () => {
   nextTick(() => {
     const canvas = canvasElement.value!;
     const ctx = canvas.getContext("2d")!;
-    Object.assign(defaultBrushOptions, props.brushOptions);
+    Object.assign(defaultCanvasOptions, props.brushOptions);
     initTheme(ctx, props, emit, props.brushOptions);
   });
 }

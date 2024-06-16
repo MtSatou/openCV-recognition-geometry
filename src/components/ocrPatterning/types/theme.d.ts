@@ -12,4 +12,6 @@ export declare interface brushOptions {
   lineType?: lineType
   /**笔类型 */
   penType?: PenType
+  /**画布背景色 */
+  fillColor: string
 }

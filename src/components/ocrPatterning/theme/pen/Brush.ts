@@ -1,5 +1,5 @@
 // 笔（笔锋）
-import { defaultBrushOptions } from "../../config"
+import { defaultCanvasOptions } from "../../config"
 interface Point {
   x: number;
   y: number;
@@ -15,7 +15,7 @@ class Point implements Point {
     this.y = y;
     this.isControl = false;
     this.time = time ?? Date.now();
-    this.lineWidth = defaultBrushOptions.size as number;
+    this.lineWidth = defaultCanvasOptions.size as number;
     this.isAdd = false;
   }
 }
@@ -57,7 +57,7 @@ export class HandwritingSelf {
     this.middle = null;
     this.end = null;
     this.preTime = null;
-    this.lineWidth = defaultBrushOptions.size as number;
+    this.lineWidth = defaultCanvasOptions.size as number;
     this.isDown = false;
   }
 
@@ -94,7 +94,7 @@ export class HandwritingSelf {
 
   draw(isUp: boolean = false) {
     // this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.fillStyle = "#fff";
+    this.ctx.fillStyle = defaultCanvasOptions.fillColor;
     this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
     this.pointLines.forEach((line) => {

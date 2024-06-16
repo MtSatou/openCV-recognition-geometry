@@ -1,10 +1,11 @@
 // 绘制正基本图形
+import { defaultCanvasOptions } from "../config";
 import { pointType } from "../types/cv";
 
 // 清空画布
 export function clearCanvas(canvas: HTMLCanvasElement) {
   const ctx = canvas.getContext("2d")!;
-  ctx.fillStyle = 'white';
+  ctx.fillStyle = defaultCanvasOptions.fillColor;
   ctx.fillRect(0, 0, canvas.width, canvas.height); 
 }
 

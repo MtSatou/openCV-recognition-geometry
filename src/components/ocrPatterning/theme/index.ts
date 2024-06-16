@@ -1,7 +1,7 @@
 import type { pointType } from "../types/cv";
 import type { propsType } from "../types/props";
 import type { brushOptions } from "../types/theme";
-import { defaultBrushOptions } from "../config";
+import { defaultCanvasOptions } from "../config";
 import { shapeTypesMap, lineTypeMap, PenTypeMap } from "../constant/index";
 import {
   ocr,
@@ -36,7 +36,7 @@ function draw(
     return;
   }
   ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
-  ctx.fillStyle = "#fff";
+  ctx.fillStyle = defaultCanvasOptions.fillColor;
   ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
   if (points.length === 0) return;
   ctx.beginPath();
@@ -65,7 +65,7 @@ export const initTheme = (
 ) => {
   const { color, size, lineType, penType } = {
     ...options,
-    ...defaultBrushOptions,
+    ...defaultCanvasOptions,
   };
   ctx.strokeStyle = color!;
   ctx.lineWidth = size!;
@@ -133,7 +133,7 @@ export const initTheme = (
 
     const drawLaserStroke = () => {
       // ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-      ctx.fillStyle = "#fff";
+      ctx.fillStyle = defaultCanvasOptions.fillColor;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.beginPath();
