@@ -226,15 +226,10 @@ export const initTheme = (
     };
     ctx.canvas.onmouseup = (event) => {
       drawing = false;
-      // 只有智能笔才能识别
-      if (defaultBrushOptions.penType !== PenTypeMap.Pen_Smart) {
-        return;
-      }
       // 总是闭合
       if (props.alwaysClosed) {
         points.push(points[0]);
       }
-      clearCanvas(ctx.canvas);
       // 闭合图形
       if (isClosedShape(points)) {
         // openCV识别
@@ -249,7 +244,7 @@ export const initTheme = (
         if (!mostFrequentShape) {
           return;
         }
-
+        clearCanvas(ctx.canvas);
         // 未知图形直接获取所有顶点坐标以直线连接
         if (mostFrequentShape.type === shapeTypesMap.Unknown) {
           const corners = filterDensePoints(points);
@@ -277,8 +272,10 @@ export const initTheme = (
         } else {
           drawShapeOnCanvas(ctx, mostFrequentShape.vertices);
         }
-      } else {
-        // 未闭合图形（线段）
+      } 
+      // 未闭合图形（线段）
+      else {
+        clearCanvas(ctx.canvas);
         const corners = filterDensePoints(points);
         drawShapeFromPoints(ctx, corners);
         emit("mouseup", {
