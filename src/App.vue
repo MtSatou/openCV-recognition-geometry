@@ -39,7 +39,8 @@ const mouseupHandler = (evt: any) => {
 const colorConfig = ref<brushOptions>({
   color: '#6699ee',
   size: 3,
-  lineType: '实线'
+  lineType: '实线',
+  fillColor: '#ffffff'
 })
 </script>
 
@@ -127,6 +128,7 @@ const colorConfig = ref<brushOptions>({
         <a-button @click="clear">清空画布</a-button>
         <a-checkbox v-model:checked="showCornerPoint">线段角点</a-checkbox>
         <a-checkbox v-model:checked="alwaysClosed">总是闭合</a-checkbox>
+        <a-checkbox disabled>保留画布</a-checkbox>
         <a-input v-model:value="colorConfig.color" type="color" style="width: 50px"/>
         <a-select
           v-model:value="colorConfig.lineType"
@@ -134,7 +136,7 @@ const colorConfig = ref<brushOptions>({
         >
           <a-select-option value="实线">实线</a-select-option>
           <a-select-option value="虚线">虚线</a-select-option>
-          <a-select-option value="毛笔" disabled>毛笔</a-select-option>
+          <a-select-option value="毛笔">毛笔</a-select-option>
           <a-select-option value="激光笔">激光笔</a-select-option>
           <a-select-option value="智能笔">智能笔</a-select-option>
         </a-select>

@@ -9,19 +9,12 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, watch } from "vue";
-import type { pointType } from "./types/cv"
 import type { propsType } from "./types/props"
-import { shapeTypesMap, lineTypeMap } from "./constant/index"
-import { ocr, isClosedShape, createCircleFromPoints, filterDensePoints } from "./utils/openCV"
+import { ocr } from "./utils/openCV"
 import {
   clearCanvas,
-  drawCircle,
-  drawShapeOnCanvas,
-  drawSquareFromPoints,
-  drawRectangleFromPoints,
-  drawShapeFromPoints
 } from "./utils/draw"
-import { initBrushTheme, defaultBrushOptions } from "./theme"
+import { useTheme, initBrushTheme, defaultBrushOptions } from "./theme"
 
 const emit = defineEmits(["mousedown", "mousemove", "mouseup"])
 
@@ -46,133 +39,7 @@ onMounted(() => {
       initBrushTheme(ctx, props.brushOptions);
     }, { deep: true, immediate: true })
 
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
-
-    let drawing = false;
-    let points: pointType[] = [];
-    canvas.addEventListener("mousedown", (event) => {
-      drawing = true;
-      points = [];
-      emit("mousedown", {
-        event
-      });
-    });
-
-    canvas.addEventListener("mousemove", (event) => {
-      if (!drawing) return;
-      const rect = canvas.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      points.push({ x, y });
-      draw();
-      emit("mousedown", {
-        event,
-        rect,
-        point: { x, y },
-        points
-      });
-    });
-
-    canvas.addEventListener("mouseup", (event) => {
-      drawing = false;
-      // 只有智能笔才能识别
-      if (props.brushOptions.lineType !== lineTypeMap.Pen_Smart) {
-        return;
-      }
-      // 总是闭合
-      if (props.alwaysClosed) {
-        points.push(points[0]);
-      }
-      // 闭合图形
-      if (isClosedShape(points)) {
-        // openCV识别
-        const mostFrequentShape = ocr(canvas)
-        emit("mouseup", {
-          event,
-          ocr: mostFrequentShape,
-          // 闭合
-          isClosedShape: true
-        })
-
-        if (!mostFrequentShape) {
-          return;
-        }
-
-        // 未知图形直接获取所有顶点坐标以直线连接
-        if (mostFrequentShape.type === shapeTypesMap.Unknown) {
-          const corners = filterDensePoints(points)
-          clearCanvas(canvas);
-          drawShapeFromPoints(ctx, corners, true)
-        }
-        // 特殊处理：圆形
-        else if (mostFrequentShape.type === shapeTypesMap.Circle) {
-          const { center, radius } = createCircleFromPoints(mostFrequentShape.vertices);
-          clearCanvas(canvas);
-          drawCircle(ctx, center.x, center.y, radius);
-        }
-        // 特殊处理：矩形
-        else if (mostFrequentShape?.type === shapeTypesMap.Rectangle) {
-          clearCanvas(canvas);
-          drawRectangleFromPoints(ctx, mostFrequentShape.vertices);
-        }
-        // 特殊处理：正方形
-        else if (mostFrequentShape?.type === shapeTypesMap.Square) {
-          clearCanvas(canvas);
-          drawSquareFromPoints(ctx, mostFrequentShape.vertices);
-        }
-        // 特殊处理：五角星
-        else if (mostFrequentShape?.type === shapeTypesMap.Star) {
-          const corners = filterDensePoints(points)
-          clearCanvas(canvas);
-          drawShapeFromPoints(ctx, corners)
-        } else {
-          clearCanvas(canvas);
-          drawShapeOnCanvas(ctx, mostFrequentShape.vertices);
-        }
-      } else {
-        // 未闭合图形（线段）
-        const corners = filterDensePoints(points)
-        clearCanvas(canvas);
-        drawShapeFromPoints(ctx, corners)
-        emit("mouseup", {
-          event,
-          ocr: corners,
-          // 未闭合
-          isClosedShape: false
-        })
-        // 显示角点
-        if (props.showCornerPoint) {
-          for (const c of corners) {
-            drawCircle(ctx, c.x, c.y, 5)
-          }
-        }
-      }
-    });
-
-    // 移动绘制
-    function draw() {
-      // 只有实现、虚线、智能笔通过这个方法绘制。其他笔有他对应的绘画逻辑
-      const whiteArr = [lineTypeMap.Line_Straight, lineTypeMap.Line_broken, lineTypeMap.Pen_Smart]
-      if (!whiteArr.includes(props.brushOptions.lineType as lineTypeMap)) {
-        return;
-      }
-      ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
-      ctx.fillStyle = '#fff';
-      ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
-      if (points.length === 0) return;
-      ctx.beginPath();
-      ctx.moveTo(points[0].x, points[0].y);
-      for (let i = 1; i < points.length; i++) {
-        ctx.lineTo(points[i].x, points[i].y);
-      }
-
-      // 总是闭合
-      if (props.alwaysClosed) {
-        ctx.lineTo(points[0].x, points[0].y);
-      }
-      ctx.stroke();
-    }
+    useTheme(canvas, props, emit);
   })();
 });
 
