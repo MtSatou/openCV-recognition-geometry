@@ -3,12 +3,13 @@
     ref="canvasElement" 
     :width="typeof width === 'number' ? width + 'px' : width"
     :height="typeof height === 'number' ? height + 'px' : height"
+    :key="canvasKey"
     :="$attrs"
   ></canvas>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, nextTick } from "vue";
 import { ocr } from "./utils/openCV"
 import { clearCanvas } from "./utils/draw"
 import { initTheme } from "./theme"
@@ -17,6 +18,7 @@ import type { propsType } from "./types/props"
 
 const emit = defineEmits(["mousedown", "mousemove", "mouseup"])
 
+const canvasKey = ref(0);
 const canvasElement = ref<HTMLCanvasElement>()!;
 
 // const props = defineProps<propsType>()
@@ -42,11 +44,22 @@ onMounted(() => {
 const ocrCanvas = () => ocr(canvasElement.value!)
 /**清空画布*/
 const clear = () => clearCanvas(canvasElement.value!)
+/**重载画布 */
+const reload = () => {
+  canvasKey.value++;
+  nextTick(() => {
+    const canvas = canvasElement.value!;
+    const ctx = canvas.getContext("2d")!;
+    Object.assign(defaultBrushOptions, props.brushOptions);
+    initTheme(ctx, props, emit, props.brushOptions);
+  });
+}
 
 /**暴露属性 */
 defineExpose({
   canvas: canvasElement,
   clear,
-  ocrCanvas
+  ocrCanvas,
+  reload
 })
 </script>

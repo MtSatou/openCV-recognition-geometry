@@ -88,9 +88,6 @@ export const initTheme = (
     ctx.canvas.onmousedown = (event) => {
       drawing = true;
       points = [];
-      emit("mousedown", {
-        event,
-      });
     };
     ctx.canvas.onmousemove = (event) => {
       if (!drawing) return;
@@ -99,12 +96,6 @@ export const initTheme = (
       const y = event.clientY - rect.top;
       points.push({ x, y });
       draw(ctx, ctx.canvas, points, props);
-      emit("mousedown", {
-        event,
-        rect,
-        point: { x, y },
-        points,
-      });
     };
     ctx.canvas.onmouseup = (event) => {
       drawing = false;
@@ -128,7 +119,6 @@ export const initTheme = (
   }
   // 激光笔
   else if (penType === PenTypeMap.Pen_Laser) {
-    ctx.setLineDash([]);
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
 
