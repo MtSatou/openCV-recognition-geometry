@@ -42,8 +42,6 @@ onMounted(() => {
 
 /**识别图像 */
 const ocrCanvas = () => ocr(canvasElement.value!)
-/**清空画布*/
-const clear = () => clearCanvas(canvasElement.value!)
 /**重载画布 */
 const reload = () => {
   canvasKey.value++;
@@ -58,7 +56,6 @@ const reload = () => {
 /**暴露属性 */
 defineExpose({
   canvas: canvasElement,
-  clear,
   ocrCanvas,
   reload
 })

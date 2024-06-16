@@ -14,14 +14,11 @@ const ocr = () => {
   // @ts-expect-error
   OCRTEXT.textContent = data.type
 }
-const clear = () => {
-  ocrRef.value.clear()
-  // @ts-expect-error
-  OCRTEXT.textContent = "= v ="
-}
 
 const reload = () => {
   ocrRef.value.reload()
+  // @ts-expect-error
+  OCRTEXT.textContent = "= v ="
 }
 const drawCircleHandler = () => drawCircle(ocrRef.value.canvas.getContext("2d"), 150, 150, 100)
 const drawHandler = (points: pointType[]) => {
@@ -44,7 +41,8 @@ const colorConfig = ref<brushOptions>({
   color: '#6699ee',
   size: 3,
   lineType: '实线',
-  fillColor: '#ffffff'
+  penType: '铅笔',
+  fillColor: "#00000000"
 })
 </script>
 
@@ -122,7 +120,6 @@ const colorConfig = ref<brushOptions>({
       </div>
       <div style="display: flex; margin-top: 10px; align-items: center;">
         <a-button @click="ocr">校验</a-button>
-        <a-button @click="clear">清空画布</a-button>
         <a-button @click="reload">重置</a-button>
         <a-checkbox v-model:checked="showCornerPoint">线段角点</a-checkbox>
         <a-checkbox v-model:checked="alwaysClosed">总是闭合</a-checkbox>
