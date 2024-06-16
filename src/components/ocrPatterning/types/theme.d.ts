@@ -3,7 +3,7 @@ import { lineTypeMap, PenTypeMap } from "../constant"
 export declare type lineType = `${lineTypeMap}`;
 export declare type PenType = `${PenTypeMap}`;
 
-export declare interface brushOptions {
+export declare interface canvasOptionsType {
   /**画笔颜色 */
   color?: string;
   /**画笔粗细 */

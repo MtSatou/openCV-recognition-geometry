@@ -26,16 +26,16 @@ const props = withDefaults(defineProps<propsType>(), {
   showCornerPoint: false,
   width: window.innerWidth - 15 + 'px',
   height: window.innerHeight - 120 + 'px',
-  // brushOptions: {}
+  // canvasOptions: {}
 })
 
 onMounted(() => {
   const canvas = canvasElement.value!;
   const ctx = canvas.getContext("2d")!;
 
-  watch(() => props.brushOptions, () => {
-    Object.assign(defaultCanvasOptions, props.brushOptions);
-    initTheme(ctx, props, emit, props.brushOptions);
+  watch(() => props.canvasOptions, () => {
+    Object.assign(defaultCanvasOptions, props.canvasOptions);
+    initTheme(ctx, props, emit, props.canvasOptions);
   }, { deep: true, immediate: true })
 });
 
@@ -47,8 +47,8 @@ const reload = () => {
   nextTick(() => {
     const canvas = canvasElement.value!;
     const ctx = canvas.getContext("2d")!;
-    Object.assign(defaultCanvasOptions, props.brushOptions);
-    initTheme(ctx, props, emit, props.brushOptions);
+    Object.assign(defaultCanvasOptions, props.canvasOptions);
+    initTheme(ctx, props, emit, props.canvasOptions);
   });
 }
 

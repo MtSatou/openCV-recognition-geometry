@@ -1,6 +1,6 @@
 import type { pointType } from "../types/cv";
 import type { propsType } from "../types/props";
-import type { brushOptions } from "../types/theme";
+import type { canvasOptionsType } from "../types/theme";
 import { defaultCanvasOptions } from "../config";
 import { shapeTypesMap, lineTypeMap, PenTypeMap } from "../constant/index";
 import {
@@ -32,7 +32,7 @@ function draw(
     lineTypeMap.Line_broken,
     PenTypeMap.Pen_Smart,
   ];
-  if (!whiteArr.includes(props.brushOptions.lineType as lineTypeMap)) {
+  if (!whiteArr.includes(props.canvasOptions.lineType as lineTypeMap)) {
     return;
   }
   ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
@@ -62,7 +62,7 @@ export const initTheme = (
   ctx: CanvasRenderingContext2D,
   props: propsType,
   emit: (event: any, ...args: any[]) => void,
-  options?: brushOptions
+  options?: canvasOptionsType
 ) => {
   const { color, size, lineType, penType } = {
     ...options,

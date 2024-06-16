@@ -3,7 +3,7 @@ import { ref } from "vue"
 import OcrPatterning from "./components/ocrPatterning/index.vue";
 import { pointType } from "./components/ocrPatterning/types/cv"
 import { drawCircle, drawShapeOnCanvas } from "./components/ocrPatterning/utils/draw"
-import type { brushOptions } from "./components/ocrPatterning/types/theme"
+import type { canvasOptionsType } from "./components/ocrPatterning/types/theme"
 
 const showCornerPoint = ref(false);
 const alwaysClosed = ref(false);
@@ -37,19 +37,19 @@ const mouseupHandler = (evt: any) => {
   }
 }
 
-const colorConfig = ref<brushOptions>({
+const colorConfig = ref<canvasOptionsType>({
   color: '#6699ee',
-  size: 3,
+  fillColor: "#fff",
+  size: 5,
   lineType: '实线',
-  penType: '铅笔',
-  fillColor: "#fff"
+  penType: '铅笔'
 })
 </script>
 
 <template>
   <OcrPatterning ref="ocrRef" :showCornerPoint="showCornerPoint" :alwaysClosed="alwaysClosed" :style="{
     boxShadow: '0 0 5px 3px #ddd'
-  }" :brushOptions="colorConfig" @mouseup="mouseupHandler"></OcrPatterning>
+  }" :canvasOptions="colorConfig" @mouseup="mouseupHandler"></OcrPatterning>
   <div class="op">
     <div>
       <div>
@@ -121,21 +121,21 @@ const colorConfig = ref<brushOptions>({
       <div style="display: flex; margin-top: 10px; align-items: center;">
         <a-button @click="ocr">校验</a-button>
         <a-button @click="reload">重置</a-button>
-        <a-checkbox v-model:checked="showCornerPoint">线段角点</a-checkbox>
         <a-checkbox v-model:checked="alwaysClosed">总是闭合</a-checkbox>
+        <a-checkbox v-model:checked="showCornerPoint" :disabled="colorConfig.penType !== '智能笔'">线段角点（智能笔可用）</a-checkbox>
         <a-checkbox disabled>保留画布</a-checkbox>
         <a-input v-model:value="colorConfig.color" type="color" style="width: 50px" />
         <a-select v-model:value="colorConfig.lineType" style="width: 120px">
           <a-select-option value="实线">实线</a-select-option>
           <a-select-option value="虚线">虚线</a-select-option>
         </a-select>
-        <a-select v-model:value="colorConfig.penType" style="width: 120px">
+        <a-select v-model:value="colorConfig.penType" style="width: 120px; margin-left: 10px">
           <a-select-option value="铅笔">铅笔</a-select-option>
           <a-select-option value="毛笔">毛笔</a-select-option>
           <a-select-option value="激光笔">激光笔</a-select-option>
           <a-select-option value="智能笔">智能笔</a-select-option>
         </a-select>
-        <a-slider v-model:value="colorConfig.size" :min="1" style="width: 200px" />
+        <a-slider v-model:value="colorConfig.size" :min="1" style="width: 200px; margin-left: 10px" />
       </div>
     </div>
     <div id="OCRTEXT">= v =</div>

@@ -1,6 +1,6 @@
-import type { brushOptions } from "../types/theme";
+import type { canvasOptionsType } from "../types/theme";
 import { lineTypeMap, PenTypeMap } from "../constant/index"
-export const defaultCanvasOptions: brushOptions = {
+export const defaultCanvasOptions: canvasOptionsType = {
   color: "#6699ee",
   size: 10,
   lineType: lineTypeMap.Line_Straight,
