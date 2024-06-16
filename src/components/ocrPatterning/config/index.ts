@@ -4,5 +4,5 @@ export const defaultBrushOptions: brushOptions = {
   color: "#6699ee",
   size: 10,
   lineType: lineTypeMap.Line_Straight,
-  PenType: PenTypeMap.Pencil
+  penType: PenTypeMap.Pencil
 };

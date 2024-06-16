@@ -1,59 +1,133 @@
-import HandwritingSelf from "./pen/Brush";
-import type { pointType } from "../types/cv"
-import type { propsType } from "../types/props"
+import type { pointType } from "../types/cv";
+import type { propsType } from "../types/props";
 import type { brushOptions } from "../types/theme";
-import { defaultBrushOptions } from "../config"
-import { shapeTypesMap, lineTypeMap } from "../constant/index"
-import { ocr, isClosedShape, createCircleFromPoints, filterDensePoints } from "../utils/openCV"
+import { defaultBrushOptions } from "../config";
+import { shapeTypesMap, lineTypeMap, PenTypeMap } from "../constant/index";
+import {
+  ocr,
+  isClosedShape,
+  createCircleFromPoints,
+  filterDensePoints,
+} from "../utils/openCV";
 import {
   clearCanvas,
   drawCircle,
   drawShapeOnCanvas,
   drawSquareFromPoints,
   drawRectangleFromPoints,
-  drawShapeFromPoints
-} from "../utils/draw"
+  drawShapeFromPoints,
+} from "../utils/draw";
+import { HandwritingSelf } from "./pen";
+
+// 移动绘制
+function draw(
+  ctx: CanvasRenderingContext2D,
+  canvas: HTMLCanvasElement,
+  points: pointType[],
+  props: propsType
+) {
+  // 只有实现、虚线、智能笔通过这个方法绘制。其他笔有他对应的绘画逻辑
+  const whiteArr = [
+    lineTypeMap.Line_Straight,
+    lineTypeMap.Line_broken,
+    PenTypeMap.Pen_Smart,
+  ];
+  if (!whiteArr.includes(props.brushOptions.lineType as lineTypeMap)) {
+    return;
+  }
+  ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
+  if (points.length === 0) return;
+  ctx.beginPath();
+  ctx.moveTo(points[0].x, points[0].y);
+  for (let i = 1; i < points.length; i++) {
+    ctx.lineTo(points[i].x, points[i].y);
+  }
+
+  // 总是闭合
+  if (props.alwaysClosed) {
+    ctx.lineTo(points[0].x, points[0].y);
+  }
+  ctx.stroke();
+}
 
 /**
  * 初始化画笔主题
  * @param ctx canvas2D上下文
  * @param options 画笔配置项
  */
-export const initBrushTheme = (
+export const initTheme = (
   ctx: CanvasRenderingContext2D,
+  props: propsType,
+  emit: (event: any, ...args: any[]) => void,
   options?: brushOptions
 ) => {
-  const { color, size, lineType } = { ...defaultBrushOptions, ...options };
+  const { color, size, lineType, penType } = {
+    ...options,
+    ...defaultBrushOptions,
+  };
   ctx.strokeStyle = color!;
   ctx.lineWidth = size!;
   // 实线
   if (lineType === lineTypeMap.Line_Straight) {
+    let points: pointType[] = [];
     ctx.setLineDash([]);
+    draw(ctx, ctx.canvas, points, props);
   }
   // 虚线
   else if (lineType === lineTypeMap.Line_broken) {
     // 设置虚线的模式，画20空5
     ctx.setLineDash([20, 5]);
   }
+
+  // 铅笔（常规笔）
+  if (penType === PenTypeMap.Pencil) {
+    let drawing = false;
+    let points: pointType[] = [];
+    ctx.canvas.onmousedown = (event) => {
+      drawing = true;
+      points = [];
+      emit("mousedown", {
+        event,
+      });
+    };
+    ctx.canvas.onmousemove = (event) => {
+      if (!drawing) return;
+      const rect = ctx.canvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      points.push({ x, y });
+      draw(ctx, ctx.canvas, points, props);
+      emit("mousedown", {
+        event,
+        rect,
+        point: { x, y },
+        points,
+      });
+    };
+    ctx.canvas.onmouseup = (event) => {
+      drawing = false;
+    }
+  }
   // 毛笔
-  else if (lineType === lineTypeMap.Pen_Brush) {
-    //以下代码为鼠标移动事件部分
+  else if (penType === PenTypeMap.Pen_Brush) {
     let handwriting = new HandwritingSelf(ctx.canvas);
-    ctx.canvas.addEventListener("mousedown", function (e: MouseEvent) {
+    ctx.canvas.onmousedown = function (e: MouseEvent) {
       handwriting.clear();
       handwriting.down(e.x, e.y);
-    });
+    };
 
-    ctx.canvas.addEventListener("mousemove", function (e: MouseEvent) {
+    ctx.canvas.onmousemove = function (e: MouseEvent) {
       handwriting.move(e.x, e.y);
-    });
+    };
 
-    ctx.canvas.addEventListener("mouseup", function (e: MouseEvent) {
+    ctx.canvas.onmouseup = function (e: MouseEvent) {
       handwriting.up(e.x, e.y);
-    });
+    };
   }
   // 激光笔
-  else if (lineType === lineTypeMap.Pen_Laser) {
+  else if (penType === PenTypeMap.Pen_Laser) {
     ctx.setLineDash([]);
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
@@ -128,158 +202,108 @@ export const initBrushTheme = (
     };
 
     const canvas = ctx.canvas;
-    canvas.addEventListener("mousedown", startDrawing);
-    canvas.addEventListener("mousemove", draw);
-    canvas.addEventListener("mouseup", stopDrawing);
-    canvas.addEventListener("mouseout", stopDrawing);
+    canvas.onmousedown = startDrawing;
+    canvas.onmousemove = draw;
+    canvas.onmouseup = stopDrawing;
+    canvas.onmouseout = stopDrawing;
     requestAnimationFrame(drawLaserStroke);
   }
-};
-
-/**
- * 初始化画布状态
- * @param canvas canvas
- * @param props vue.props
- * @param emit vue.emit
- */
-export const useTheme = (
-  canvas: HTMLCanvasElement,
-  props: propsType,
-  emit: (event: "mousedown" | "mousemove" | "mouseup", ...args: any[]) => void
-) => {
-  const ctx = canvas.getContext("2d")!;
-  ctx.fillStyle = "#fff";
-  ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
-
-  let drawing = false;
-  let points: pointType[] = [];
-  canvas.addEventListener("mousedown", (event) => {
-    drawing = true;
-    points = [];
-    emit("mousedown", {
-      event,
-    });
-  });
-
-  canvas.addEventListener("mousemove", (event) => {
-    if (!drawing) return;
-    const rect = canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-    points.push({ x, y });
-    draw();
-    emit("mousedown", {
-      event,
-      rect,
-      point: { x, y },
-      points,
-    });
-  });
-
-  canvas.addEventListener("mouseup", (event) => {
-    drawing = false;
-    // 只有智能笔才能识别
-    if (defaultBrushOptions.lineType !== lineTypeMap.Pen_Smart) {
-      return;
-    }
-    // 总是闭合
-    if (props.alwaysClosed) {
-      points.push(points[0]);
-    }
-    // 闭合图形
-    if (isClosedShape(points)) {
-      // openCV识别
-      const mostFrequentShape = ocr(canvas);
-      emit("mouseup", {
+  // 智能笔
+  else if (penType === PenTypeMap.Pen_Smart) {
+    let drawing = false;
+    let points: pointType[] = [];
+    ctx.canvas.onmousedown = (event) => {
+      drawing = true;
+      points = [];
+      emit("mousedown", {
         event,
-        ocr: mostFrequentShape,
-        // 闭合
-        isClosedShape: true,
       });
+    };
 
-      if (!mostFrequentShape) {
+    ctx.canvas.onmousemove = (event) => {
+      if (!drawing) return;
+      const rect = ctx.canvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      points.push({ x, y });
+      draw(ctx, ctx.canvas, points, props);
+      emit("mousedown", {
+        event,
+        rect,
+        point: { x, y },
+        points,
+      });
+    };
+    ctx.canvas.onmouseup = (event) => {
+      drawing = false;
+      // 只有智能笔才能识别
+      if (defaultBrushOptions.penType !== PenTypeMap.Pen_Smart) {
         return;
       }
+      // 总是闭合
+      if (props.alwaysClosed) {
+        points.push(points[0]);
+      }
+      clearCanvas(ctx.canvas);
+      // 闭合图形
+      if (isClosedShape(points)) {
+        // openCV识别
+        const mostFrequentShape = ocr(ctx.canvas);
+        emit("mouseup", {
+          event,
+          ocr: mostFrequentShape,
+          // 闭合
+          isClosedShape: true,
+        });
 
-      // 未知图形直接获取所有顶点坐标以直线连接
-      if (mostFrequentShape.type === shapeTypesMap.Unknown) {
-        const corners = filterDensePoints(points);
-        clearCanvas(canvas);
-        drawShapeFromPoints(ctx, corners, true);
-      }
-      // 特殊处理：圆形
-      else if (mostFrequentShape.type === shapeTypesMap.Circle) {
-        const { center, radius } = createCircleFromPoints(
-          mostFrequentShape.vertices
-        );
-        clearCanvas(canvas);
-        drawCircle(ctx, center.x, center.y, radius);
-      }
-      // 特殊处理：矩形
-      else if (mostFrequentShape?.type === shapeTypesMap.Rectangle) {
-        clearCanvas(canvas);
-        drawRectangleFromPoints(ctx, mostFrequentShape.vertices);
-      }
-      // 特殊处理：正方形
-      else if (mostFrequentShape?.type === shapeTypesMap.Square) {
-        clearCanvas(canvas);
-        drawSquareFromPoints(ctx, mostFrequentShape.vertices);
-      }
-      // 特殊处理：五角星
-      else if (mostFrequentShape?.type === shapeTypesMap.Star) {
-        const corners = filterDensePoints(points);
-        clearCanvas(canvas);
-        drawShapeFromPoints(ctx, corners);
+        if (!mostFrequentShape) {
+          return;
+        }
+
+        // 未知图形直接获取所有顶点坐标以直线连接
+        if (mostFrequentShape.type === shapeTypesMap.Unknown) {
+          const corners = filterDensePoints(points);
+          drawShapeFromPoints(ctx, corners, true);
+        }
+        // 特殊处理：圆形
+        else if (mostFrequentShape.type === shapeTypesMap.Circle) {
+          const { center, radius } = createCircleFromPoints(
+            mostFrequentShape.vertices
+          );
+          drawCircle(ctx, center.x, center.y, radius);
+        }
+        // 特殊处理：矩形
+        else if (mostFrequentShape?.type === shapeTypesMap.Rectangle) {
+          drawRectangleFromPoints(ctx, mostFrequentShape.vertices);
+        }
+        // 特殊处理：正方形
+        else if (mostFrequentShape?.type === shapeTypesMap.Square) {
+          drawSquareFromPoints(ctx, mostFrequentShape.vertices);
+        }
+        // 特殊处理：五角星
+        else if (mostFrequentShape?.type === shapeTypesMap.Star) {
+          const corners = filterDensePoints(points);
+          drawShapeFromPoints(ctx, corners);
+        } else {
+          drawShapeOnCanvas(ctx, mostFrequentShape.vertices);
+        }
       } else {
-        clearCanvas(canvas);
-        drawShapeOnCanvas(ctx, mostFrequentShape.vertices);
-      }
-    } else {
-      // 未闭合图形（线段）
-      const corners = filterDensePoints(points);
-      clearCanvas(canvas);
-      drawShapeFromPoints(ctx, corners);
-      emit("mouseup", {
-        event,
-        ocr: corners,
-        // 未闭合
-        isClosedShape: false,
-      });
-      // 显示角点
-      if (props.showCornerPoint) {
-        for (const c of corners) {
-          drawCircle(ctx, c.x, c.y, 5);
+        // 未闭合图形（线段）
+        const corners = filterDensePoints(points);
+        drawShapeFromPoints(ctx, corners);
+        emit("mouseup", {
+          event,
+          ocr: corners,
+          // 未闭合
+          isClosedShape: false,
+        });
+        // 显示角点
+        if (props.showCornerPoint) {
+          for (const c of corners) {
+            drawCircle(ctx, c.x, c.y, 5);
+          }
         }
       }
-    }
-  });
-
-  // 移动绘制
-  function draw() {
-    // 只有实现、虚线、智能笔通过这个方法绘制。其他笔有他对应的绘画逻辑
-    const whiteArr = [
-      lineTypeMap.Line_Straight,
-      lineTypeMap.Line_broken,
-      lineTypeMap.Pen_Smart,
-    ];
-    if (!whiteArr.includes(props.brushOptions.lineType as lineTypeMap)) {
-      return;
-    }
-    ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
-    if (points.length === 0) return;
-    ctx.beginPath();
-    ctx.moveTo(points[0].x, points[0].y);
-    for (let i = 1; i < points.length; i++) {
-      ctx.lineTo(points[i].x, points[i].y);
-    }
-
-    // 总是闭合
-    if (props.alwaysClosed) {
-      ctx.lineTo(points[0].x, points[0].y);
-    }
-    ctx.stroke();
+    };
   }
 };
-

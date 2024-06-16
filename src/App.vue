@@ -14,7 +14,7 @@ const ocr = () => {
   // @ts-expect-error
   OCRTEXT.textContent = data.type
 }
-const clear =  () => {
+const clear = () => {
   ocrRef.value.clear()
   // @ts-expect-error
   OCRTEXT.textContent = "= v ="
@@ -45,16 +45,9 @@ const colorConfig = ref<brushOptions>({
 </script>
 
 <template>
-  <OcrPatterning 
-    ref="ocrRef" 
-    :showCornerPoint="showCornerPoint" 
-    :alwaysClosed="alwaysClosed" 
-    :style="{
-      boxShadow: '0 0 5px 3px #ddd'
-    }"
-    :brushOptions="colorConfig"
-    @mouseup="mouseupHandler"
-  ></OcrPatterning>
+  <OcrPatterning ref="ocrRef" :showCornerPoint="showCornerPoint" :alwaysClosed="alwaysClosed" :style="{
+    boxShadow: '0 0 5px 3px #ddd'
+  }" :brushOptions="colorConfig" @mouseup="mouseupHandler"></OcrPatterning>
   <div class="op">
     <div>
       <div>
@@ -129,18 +122,18 @@ const colorConfig = ref<brushOptions>({
         <a-checkbox v-model:checked="showCornerPoint">线段角点</a-checkbox>
         <a-checkbox v-model:checked="alwaysClosed">总是闭合</a-checkbox>
         <a-checkbox disabled>保留画布</a-checkbox>
-        <a-input v-model:value="colorConfig.color" type="color" style="width: 50px"/>
-        <a-select
-          v-model:value="colorConfig.lineType"
-          style="width: 120px"
-        >
+        <a-input v-model:value="colorConfig.color" type="color" style="width: 50px" />
+        <a-select v-model:value="colorConfig.lineType" style="width: 120px">
           <a-select-option value="实线">实线</a-select-option>
           <a-select-option value="虚线">虚线</a-select-option>
+        </a-select>
+        <a-select v-model:value="colorConfig.penType" style="width: 120px">
+          <a-select-option value="铅笔">铅笔</a-select-option>
           <a-select-option value="毛笔">毛笔</a-select-option>
           <a-select-option value="激光笔">激光笔</a-select-option>
           <a-select-option value="智能笔">智能笔</a-select-option>
         </a-select>
-        <a-slider v-model:value="colorConfig.size" :min="1" style="width: 200px"/>
+        <a-slider v-model:value="colorConfig.size" :min="1" style="width: 200px" />
       </div>
     </div>
     <div id="OCRTEXT">= v =</div>
@@ -153,7 +146,9 @@ const colorConfig = ref<brushOptions>({
 }
 
 ::v-deep() {
-  button, input {
+
+  button,
+  input {
     margin-right: 10px;
   }
 }

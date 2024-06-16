@@ -11,5 +11,5 @@ export declare interface brushOptions {
   /**线段类型 */
   lineType?: lineType
   /**笔类型 */
-  PenType?: PenType
+  penType?: PenType
 }
