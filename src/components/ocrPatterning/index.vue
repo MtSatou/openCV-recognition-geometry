@@ -21,7 +21,7 @@ import {
   drawRectangleFromPoints,
   drawShapeFromPoints
 } from "./utils/draw"
-import { initBrushTheme } from "./theme"
+import { initBrushTheme, defaultBrushOptions } from "./theme"
 
 const emit = defineEmits(["mousedown", "mousemove", "mouseup"])
 
@@ -42,6 +42,7 @@ onMounted(() => {
     const ctx = canvas.getContext("2d")!;
 
     watch(() => props.brushOptions, () => {
+      Object.assign(defaultBrushOptions, props.brushOptions);
       initBrushTheme(ctx, props.brushOptions);
     }, { deep: true, immediate: true })
 
@@ -151,6 +152,11 @@ onMounted(() => {
 
     // 移动绘制
     function draw() {
+      // 只有实现、虚线、智能笔通过这个方法绘制。其他笔有他对应的绘画逻辑
+      const whiteArr = [lineTypeMap.Line_Straight, lineTypeMap.Line_broken, lineTypeMap.Pen_Smart]
+      if (!whiteArr.includes(props.brushOptions.lineType as lineTypeMap)) {
+        return;
+      }
       ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
       ctx.fillStyle = '#fff';
       ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);

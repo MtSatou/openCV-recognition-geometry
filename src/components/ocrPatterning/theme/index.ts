@@ -1,10 +1,11 @@
-import type { brushOptions } from "../types/theme"
-import { lineTypeMap } from "../constant"
+import type { brushOptions } from "../types/theme";
+import { lineTypeMap } from "../constant";
+import HandwritingSelf from "./pen/Brush";
 
 export const defaultBrushOptions: brushOptions = {
   color: "#6699ee",
   size: 10,
-  lineType: lineTypeMap.Line_Straight
+  lineType: lineTypeMap.Line_Straight,
 };
 
 /**
@@ -12,14 +13,17 @@ export const defaultBrushOptions: brushOptions = {
  * @param ctx canvas2D上下文
  * @param options 画笔配置项
  */
-export const initBrushTheme = (ctx: CanvasRenderingContext2D, options?: brushOptions) => {
+export const initBrushTheme = (
+  ctx: CanvasRenderingContext2D,
+  options?: brushOptions
+) => {
   const { color, size, lineType } = { ...defaultBrushOptions, ...options };
   ctx.strokeStyle = color!;
   ctx.lineWidth = size!;
   // 实线
   if (lineType === lineTypeMap.Line_Straight) {
     ctx.setLineDash([]);
-  } 
+  }
   // 虚线
   else if (lineType === lineTypeMap.Line_broken) {
     // 设置虚线的模式，画20空5
@@ -27,30 +31,43 @@ export const initBrushTheme = (ctx: CanvasRenderingContext2D, options?: brushOpt
   }
   // 毛笔
   else if (lineType === lineTypeMap.Pen_Brush) {
+    //以下代码为鼠标移动事件部分
+    let handwriting = new HandwritingSelf(ctx.canvas);
+    ctx.canvas.addEventListener("mousedown", function (e: MouseEvent) {
+      handwriting.clear()
+      handwriting.down(e.x, e.y);
+    });
     
-  } 
+    ctx.canvas.addEventListener("mousemove", function (e: MouseEvent) {
+      handwriting.move(e.x, e.y);
+    });
+    
+    ctx.canvas.addEventListener("mouseup", function (e: MouseEvent) {
+      handwriting.up(e.x, e.y);
+    });
+  }
   // 激光笔
   else if (lineType === lineTypeMap.Pen_Laser) {
     ctx.setLineDash([]);
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
 
     let isDrawing = false;
     let points: {
-      alpha: number
-      size: number
-      color: string
-      x: number
-      y: number
+      alpha: number;
+      size: number;
+      color: string;
+      x: number;
+      y: number;
     }[] = [];
 
     const drawLaserStroke = () => {
       // ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-      ctx.fillStyle = "#fff"
-      ctx.fillRect(0, 0, canvas.width, canvas.height); 
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.beginPath();
-      
+
       for (let i = 0; i < points.length; i++) {
         const point = points[i];
         ctx.globalAlpha = point.alpha;
@@ -68,10 +85,12 @@ export const initBrushTheme = (ctx: CanvasRenderingContext2D, options?: brushOpt
       ctx.globalAlpha = 1;
 
       // 每个点透明度逐渐降低，并保留透明度>0的数据
-      points = points.map(point => ({
-        ...point,
-        alpha: point.alpha - 0.03
-      })).filter(point => point.alpha > 0);
+      points = points
+        .map((point) => ({
+          ...point,
+          alpha: point.alpha - 0.03,
+        }))
+        .filter((point) => point.alpha > 0);
 
       requestAnimationFrame(drawLaserStroke);
     };
@@ -83,7 +102,7 @@ export const initBrushTheme = (ctx: CanvasRenderingContext2D, options?: brushOpt
         y: event.clientY,
         alpha: 1,
         size: size!,
-        color: color!
+        color: color!,
       });
     };
 
@@ -94,7 +113,7 @@ export const initBrushTheme = (ctx: CanvasRenderingContext2D, options?: brushOpt
         y: event.clientY,
         alpha: 1,
         size: size!,
-        color: color!
+        color: color!,
       });
     };
 
@@ -103,12 +122,12 @@ export const initBrushTheme = (ctx: CanvasRenderingContext2D, options?: brushOpt
     };
 
     const canvas = ctx.canvas;
-    canvas.addEventListener('mousedown', startDrawing);
-    canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('mouseup', stopDrawing);
-    canvas.addEventListener('mouseout', stopDrawing);
-    requestAnimationFrame(drawLaserStroke);    
+    canvas.addEventListener("mousedown", startDrawing);
+    canvas.addEventListener("mousemove", draw);
+    canvas.addEventListener("mouseup", stopDrawing);
+    canvas.addEventListener("mouseout", stopDrawing);
+    requestAnimationFrame(drawLaserStroke);
   }
-}
+};
 
 export default defaultBrushOptions;
