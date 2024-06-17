@@ -8,6 +8,8 @@ export declare interface propsType {
   width: number | string;
   /**画布高度 */
   height: number | string;
+  /**画布背景色 */
+  fillColor: string
   /**canvas设置 */
   canvasOptions: canvasOptionsType
 } 
