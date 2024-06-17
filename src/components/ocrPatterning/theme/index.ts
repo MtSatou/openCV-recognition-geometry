@@ -1,6 +1,6 @@
 import type { pointType } from "../types/cv";
 import type { propsType } from "../types/props";
-import type { canvasOptionsType } from "../types/theme";
+import type { canvasOptionsType, lineType, PenType } from "../types/theme";
 import { defaultCanvasOptions } from "../config";
 import { shapeTypesMap, lineTypeMap, PenTypeMap } from "../constant/index";
 import {
@@ -16,6 +16,7 @@ import {
   drawSquareFromPoints,
   drawRectangleFromPoints,
   drawShapeFromPoints,
+  getCanvasImgRgbaData
 } from "../utils/draw";
 import { HandwritingSelf } from "./pen";
 
@@ -36,8 +37,6 @@ function draw(
     return;
   }
   ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
-  ctx.fillStyle = defaultCanvasOptions.fillColor;
-  ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
   if (points.length === 0) return;
   ctx.lineWidth = defaultCanvasOptions.size as number;
   ctx.beginPath();
@@ -53,6 +52,27 @@ function draw(
   ctx.stroke();
 }
 
+export interface callbackType {
+  /**鼠标事件对象 */
+  event: MouseEvent,
+  /**点位数据 */
+  data: any,
+  /**源图像像素数据 */
+  pixels: ImageData,
+  /**转换后图像像素数据 */
+  canvasImageData: { r: number, g: number, b: number, a: number }[],
+  penData: {
+    /**笔类型 */
+    penType: PenType,
+    /**笔颜色 */
+    color: string,
+    /**笔大小 */
+    size: number,
+    /**线类型 */
+    lineType: lineType,
+  }
+}
+
 /**
  * 初始化画笔主题
  * @param ctx canvas2D上下文
@@ -61,17 +81,17 @@ function draw(
 export const initTheme = (
   ctx: CanvasRenderingContext2D,
   props: propsType,
-  emit: (event: any, ...args: any[]) => void,
-  options?: canvasOptionsType
+  options?: canvasOptionsType,
+  cb?: (event: callbackType) => void
 ) => {
   const { color, size, lineType, penType } = {
-    ...options,
     ...defaultCanvasOptions,
+    ...options,
   };
+
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   ctx.strokeStyle = color!;
   ctx.lineWidth = size!;
-  ctx.fillStyle = defaultCanvasOptions.fillColor;
-  ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
   // 实线
   if (lineType === lineTypeMap.Line_Straight) {
@@ -99,24 +119,48 @@ export const initTheme = (
       points.push({ x, y });
       draw(ctx, ctx.canvas, points, props);
     };
-    ctx.canvas.onmouseup = () => {
+    ctx.canvas.onmouseup = (event: MouseEvent) => {
       drawing = false;
+      cb && cb({
+        event,
+        data: points,
+        pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
+        canvasImageData: getCanvasImgRgbaData(ctx),
+        penData: {
+          penType,
+          lineType,
+          size,
+          color
+        }
+      })
     }
   }
   // 毛笔
   else if (penType === PenTypeMap.Pen_Brush) {
     let handwriting = new HandwritingSelf(ctx.canvas);
-    ctx.canvas.onmousedown = function (e: MouseEvent) {
+    ctx.canvas.onmousedown = function (event: MouseEvent) {
       handwriting.clear();
-      handwriting.down(e.x, e.y);
+      handwriting.down(event.x, event.y);
     };
 
-    ctx.canvas.onmousemove = function (e: MouseEvent) {
-      handwriting.move(e.x, e.y);
+    ctx.canvas.onmousemove = function (event: MouseEvent) {
+      handwriting.move(event.x, event.y);
     };
 
-    ctx.canvas.onmouseup = function (e: MouseEvent) {
-      handwriting.up(e.x, e.y);
+    ctx.canvas.onmouseup = function (event: MouseEvent) {
+      handwriting.up(event.x, event.y);
+      cb && cb({
+        event,
+        data: [],
+        pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
+        canvasImageData: getCanvasImgRgbaData(ctx),
+        penData: {
+          penType,
+          lineType,
+          size,
+          color
+        }
+      })
     };
   }
   // 激光笔
@@ -134,10 +178,7 @@ export const initTheme = (
     }[] = [];
 
     const drawLaserStroke = () => {
-      // ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-      ctx.fillStyle = defaultCanvasOptions.fillColor;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
       ctx.beginPath();
 
       for (let i = 0; i < points.length; i++) {
@@ -189,8 +230,20 @@ export const initTheme = (
       });
     };
 
-    const stopDrawing = () => {
+    const stopDrawing = (event: MouseEvent) => {
       isDrawing = false;
+      cb && cb({
+        event,
+        data: [],
+        pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
+        canvasImageData: getCanvasImgRgbaData(ctx),
+        penData: {
+          penType,
+          lineType,
+          size,
+          color
+        }
+      })
     };
 
     const canvas = ctx.canvas;
@@ -207,9 +260,6 @@ export const initTheme = (
     ctx.canvas.onmousedown = (event) => {
       drawing = true;
       points = [];
-      emit("mousedown", {
-        event,
-      });
     };
 
     ctx.canvas.onmousemove = (event) => {
@@ -219,12 +269,6 @@ export const initTheme = (
       const y = event.clientY - rect.top;
       points.push({ x, y });
       draw(ctx, ctx.canvas, points, props);
-      emit("mousedown", {
-        event,
-        rect,
-        point: { x, y },
-        points,
-      });
     };
     ctx.canvas.onmouseup = (event) => {
       drawing = false;
@@ -236,17 +280,10 @@ export const initTheme = (
       if (isClosedShape(points)) {
         // openCV识别
         const mostFrequentShape = ocr(ctx.canvas);
-        emit("mouseup", {
-          event,
-          ocr: mostFrequentShape,
-          // 闭合
-          isClosedShape: true,
-        });
-
+        clearCanvas(ctx.canvas);
         if (!mostFrequentShape) {
           return;
         }
-        clearCanvas(ctx.canvas);
         // 未知图形直接获取所有顶点坐标以直线连接
         if (mostFrequentShape.type === shapeTypesMap.Unknown) {
           const corners = filterDensePoints(points);
@@ -274,17 +311,37 @@ export const initTheme = (
         } else {
           drawShapeOnCanvas(ctx, mostFrequentShape.vertices);
         }
+        
+        cb && cb({
+          event,
+          data: mostFrequentShape,
+          pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
+          canvasImageData: getCanvasImgRgbaData(ctx),
+          penData: {
+            penType,
+            lineType,
+            size,
+            color
+          }
+        })
       } 
       // 未闭合图形（线段）
       else {
-        clearCanvas(ctx.canvas);
         const corners = filterDensePoints(points);
+        clearCanvas(ctx.canvas)
         drawShapeFromPoints(ctx, corners);
-        emit("mouseup", {
+
+        cb && cb({
           event,
-          ocr: corners,
-          // 未闭合
-          isClosedShape: false,
+          data: corners,
+          pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
+          canvasImageData: getCanvasImgRgbaData(ctx),
+          penData: {
+            penType,
+            lineType,
+            size,
+            color
+          }
         });
         // 显示角点
         if (props.showCornerPoint) {
@@ -293,6 +350,7 @@ export const initTheme = (
           }
         }
       }
+      clearCanvas(ctx.canvas)
     };
   }
 };

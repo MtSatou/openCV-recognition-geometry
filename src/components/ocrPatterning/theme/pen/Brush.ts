@@ -94,6 +94,7 @@ export class HandwritingSelf {
 
   draw(isUp: boolean = false) {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.fillStyle = "#00000000";
 
     this.pointLines.forEach((line) => {
       let points = line.points;
@@ -284,7 +285,7 @@ export class HandwritingSelf {
       this.line.points[this.line.points.length - 1].x == p.x &&
       this.line.points[this.line.points.length - 1].y == p.y
     )
-      return;
+    return;
     this.line.points.push(p);
   }
 

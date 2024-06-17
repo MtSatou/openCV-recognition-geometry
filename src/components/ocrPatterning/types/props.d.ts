@@ -9,7 +9,9 @@ export declare interface propsType {
   /**画布高度 */
   height: number | string;
   /**画布背景色 */
-  fillColor: string
+  fillColor: string;
+  /**保留画布，默认true */
+  reserve: boolean;
   /**canvas设置 */
-  canvasOptions: canvasOptionsType
+  canvasOptions: canvasOptionsType;
 } 
