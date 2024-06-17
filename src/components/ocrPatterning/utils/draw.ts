@@ -1,5 +1,4 @@
 // 绘制正基本图形
-import { defaultCanvasOptions } from "../config";
 import { pointType } from "../types/cv";
 
 // 清空画布
