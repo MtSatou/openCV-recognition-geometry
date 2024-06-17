@@ -257,12 +257,12 @@ export const initTheme = (
   else if (penType === PenTypeMap.Pen_Smart) {
     let drawing = false;
     let points: pointType[] = [];
-    ctx.canvas.onmousedown = (event) => {
+    ctx.canvas.onmousedown = () => {
       drawing = true;
       points = [];
     };
 
-    ctx.canvas.onmousemove = (event) => {
+    ctx.canvas.onmousemove = (event: MouseEvent) => {
       if (!drawing) return;
       const rect = ctx.canvas.getBoundingClientRect();
       const x = event.clientX - rect.left;
@@ -270,7 +270,7 @@ export const initTheme = (
       points.push({ x, y });
       draw(ctx, ctx.canvas, points, props);
     };
-    ctx.canvas.onmouseup = (event) => {
+    ctx.canvas.onmouseup = (event: MouseEvent) => {
       drawing = false;
       // 总是闭合
       if (props.alwaysClosed) {
