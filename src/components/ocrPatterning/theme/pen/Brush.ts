@@ -1,5 +1,5 @@
 // 笔（笔锋）
-import { defaultCanvasOptions } from "../../config"
+import { defaultCanvasOptions } from "../../config";
 interface Point {
   x: number;
   y: number;
@@ -75,7 +75,7 @@ export class HandwritingSelf {
     if (this.isDown) {
       let currentPoint = new Point(x, y, Date.now());
       this.addPoint(currentPoint);
-      this.draw();
+      this.draw(false);
     }
   }
 
@@ -92,9 +92,33 @@ export class HandwritingSelf {
     this.isDown = false;
   }
 
+  // 计算绘画时最大矩形范围
+  calculateMinMaxCoordinates(points: Point[]) {
+    if (points.length > 0) {
+      let minX = Infinity;
+      let minY = Infinity;
+      let maxX = -Infinity;
+      let maxY = -Infinity;
+
+      points.forEach(function (point) {
+        if (point.x < minX) minX = point.x;
+        if (point.y < minY) minY = point.y;
+        if (point.x > maxX) maxX = point.x;
+        if (point.y > maxY) maxY = point.y;
+      });
+
+      return {
+        max: { x: maxX + defaultCanvasOptions.size, y: maxY + defaultCanvasOptions.size },
+        min: { x: minX - defaultCanvasOptions.size, y: minY - defaultCanvasOptions.size },
+      }
+    }
+  }
+
   draw(isUp: boolean = false) {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.fillStyle = "#00000000";
+    const { max, min } = this.calculateMinMaxCoordinates(this.line.points)!;
+    this.ctx.clearRect(min.x, min.y, max.x, max.y);
+    this.ctx.fillStyle = "#336699";
+    this.ctx.fillRect(min.x, min.y, max.x, max.y);
 
     this.pointLines.forEach((line) => {
       let points = line.points;
@@ -285,11 +309,16 @@ export class HandwritingSelf {
       this.line.points[this.line.points.length - 1].x == p.x &&
       this.line.points[this.line.points.length - 1].y == p.y
     )
-    return;
+      return;
     this.line.points.push(p);
   }
 
-  computeControlPoints(k: number, begin: Point, middle: Point, end: Point | null) {
+  computeControlPoints(
+    k: number,
+    begin: Point,
+    middle: Point,
+    end: Point | null
+  ) {
     if (k > 0.5 || k <= 0) return;
 
     let diff1 = new Point(middle.x - begin.x, middle.y - begin.y);
