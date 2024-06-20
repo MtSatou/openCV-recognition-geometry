@@ -60,7 +60,7 @@ export interface callbackType {
   /**源图像像素数据 */
   pixels: ImageData,
   /**转换后图像像素数据 */
-  canvasImageData: { r: number, g: number, b: number, a: number }[],
+  // canvasImageData: { r: number, g: number, b: number, a: number }[],
   penData: {
     /**笔类型 */
     penType: PenType,
@@ -125,7 +125,7 @@ export const initTheme = (
         event,
         data: points,
         pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
-        canvasImageData: getCanvasImgRgbaData(ctx),
+        // canvasImageData: getCanvasImgRgbaData(ctx),
         penData: {
           penType,
           lineType,
@@ -153,7 +153,7 @@ export const initTheme = (
         event,
         data: [],
         pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
-        canvasImageData: getCanvasImgRgbaData(ctx),
+        // canvasImageData: getCanvasImgRgbaData(ctx),
         penData: {
           penType,
           lineType,
@@ -236,7 +236,7 @@ export const initTheme = (
         event,
         data: [],
         pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
-        canvasImageData: getCanvasImgRgbaData(ctx),
+        // canvasImageData: getCanvasImgRgbaData(ctx),
         penData: {
           penType,
           lineType,
@@ -316,7 +316,7 @@ export const initTheme = (
           event,
           data: mostFrequentShape,
           pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
-          canvasImageData: getCanvasImgRgbaData(ctx),
+          // canvasImageData: getCanvasImgRgbaData(ctx),
           penData: {
             penType,
             lineType,
@@ -335,7 +335,7 @@ export const initTheme = (
           event,
           data: corners,
           pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
-          canvasImageData: getCanvasImgRgbaData(ctx),
+          // canvasImageData: getCanvasImgRgbaData(ctx),
           penData: {
             penType,
             lineType,
