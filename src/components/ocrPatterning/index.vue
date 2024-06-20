@@ -20,6 +20,7 @@
 <script lang="ts" setup>
 import { ref, onMounted, watch, nextTick, computed } from "vue";
 import { ocr } from "./utils/openCV"
+import { throttle } from "./utils/common"
 import { setCanvasImgRgbaData, clearCanvas } from "./utils/draw"
 import { initTheme, callbackType } from "./theme"
 import { defaultCanvasOptions } from "./config"
@@ -80,8 +81,8 @@ const clear = () => {
 };
 
 onMounted(() => {
-  watch(() => props.canvasOptions, reload, { deep: true, immediate: true });
-  watch(() => props.reserve, clear);
+  watch(() => props.canvasOptions, throttle(reload, 500), { deep: true, immediate: true });
+  watch(() => props.reserve, throttle(clear, 500));
 });
 
 /**暴露属性 */

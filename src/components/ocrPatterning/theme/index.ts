@@ -15,8 +15,7 @@ import {
   drawShapeOnCanvas,
   drawSquareFromPoints,
   drawRectangleFromPoints,
-  drawShapeFromPoints,
-  getCanvasImgRgbaData
+  drawShapeFromPoints
 } from "../utils/draw";
 import { HandwritingSelf } from "./pen";
 
