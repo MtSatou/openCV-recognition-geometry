@@ -53,7 +53,6 @@ export function debounce(fn: (...args: any[]) => void, delay: number) {
     timer = setTimeout(() => {
       // @ts-expect-error
       fn.apply(context, args);
-      console.log("???")
     }, delay);
   }
 }

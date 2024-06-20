@@ -53,11 +53,11 @@ function draw(
 
 export interface callbackType {
   /**鼠标事件对象 */
-  event: MouseEvent,
+  // event: MouseEvent,
   /**点位数据 */
-  data: any,
+  // data: any,
   /**源图像像素数据 */
-  pixels: ImageData,
+  // pixels: ImageData,
   /**转换后图像像素数据 */
   // canvasImageData: { r: number, g: number, b: number, a: number }[],
   penData: {
@@ -121,9 +121,9 @@ export const initTheme = (
     ctx.canvas.onmouseup = (event: MouseEvent) => {
       drawing = false;
       cb && cb({
-        event,
-        data: points,
-        pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
+        // event,
+        // data: points,
+        // pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
         // canvasImageData: getCanvasImgRgbaData(ctx),
         penData: {
           penType,
@@ -149,9 +149,9 @@ export const initTheme = (
     ctx.canvas.onmouseup = function (event: MouseEvent) {
       handwriting.up(event.x, event.y);
       cb && cb({
-        event,
-        data: [],
-        pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
+        // event,
+        // data: [],
+        // pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
         // canvasImageData: getCanvasImgRgbaData(ctx),
         penData: {
           penType,
@@ -232,9 +232,9 @@ export const initTheme = (
     const stopDrawing = (event: MouseEvent) => {
       isDrawing = false;
       cb && cb({
-        event,
-        data: [],
-        pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
+        // event,
+        // data: [],
+        // pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
         // canvasImageData: getCanvasImgRgbaData(ctx),
         penData: {
           penType,
@@ -312,9 +312,9 @@ export const initTheme = (
         }
         
         cb && cb({
-          event,
-          data: mostFrequentShape,
-          pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
+          // event,
+          // data: mostFrequentShape,
+          // pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
           // canvasImageData: getCanvasImgRgbaData(ctx),
           penData: {
             penType,
@@ -331,9 +331,9 @@ export const initTheme = (
         drawShapeFromPoints(ctx, corners);
 
         cb && cb({
-          event,
-          data: corners,
-          pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
+          // event,
+          // data: corners,
+          // pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
           // canvasImageData: getCanvasImgRgbaData(ctx),
           penData: {
             penType,
