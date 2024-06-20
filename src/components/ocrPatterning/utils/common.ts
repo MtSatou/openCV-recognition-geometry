@@ -1,10 +1,8 @@
 export function throttle(fn: (...args: any[]) => void, interval: number, options = { leading: true, trailing: false }) {
-  // 1.记录上一次的开始时间
   const { leading, trailing } = options;
   let lastTime = 0;
   let timer: any = null;
 
-  // 2.事件触发时, 真正执行的函数
   const _throttle = function (...args: any[]) {
     return new Promise((resolve, reject) => {
       const nowTime = new Date().getTime();
