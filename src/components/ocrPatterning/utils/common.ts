@@ -4,7 +4,7 @@ export function throttle(fn: (...args: any[]) => void, interval: number, options
   let timer: any = null;
 
   const _throttle = function (...args: any[]) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const nowTime = new Date().getTime();
       if (!lastTime && !leading) lastTime = nowTime;
 
@@ -41,4 +41,19 @@ export function throttle(fn: (...args: any[]) => void, interval: number, options
   };
 
   return _throttle;
+}
+
+export function debounce(fn: (...args: any[]) => void, delay: number) {
+  let timer: any;
+  return function() {
+    // @ts-expect-error
+    let context = this;
+    let args = arguments;
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      // @ts-expect-error
+      fn.apply(context, args);
+      console.log("???")
+    }, delay);
+  }
 }
