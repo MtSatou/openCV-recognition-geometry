@@ -51,6 +51,7 @@ const mouseCallback = (evt: callbackType) => {
   if (evt.penData.penType === PenTypeMap.Pen_Laser) {
     return;
   }
+  reload();
   const formCtx = proxyCanvasElement.value!.getContext("2d")!;
   const toCtx = renderCanvasElement.value!.getContext("2d")!;
   const mergeImageData = props.reserve && setCanvasImgRgbaData(formCtx, toCtx) || null;
