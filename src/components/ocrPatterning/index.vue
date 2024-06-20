@@ -21,7 +21,7 @@
 import { ref, onMounted, watch, nextTick, computed } from "vue";
 import { ocr } from "./utils/openCV"
 import { debounce } from "./utils/common"
-import { setCanvasImgRgbaData, clearCanvas } from "./utils/draw"
+import { mergeCanvas, clearCanvas } from "./utils/draw"
 import { initTheme, callbackType } from "./theme"
 import { defaultCanvasOptions } from "./config"
 import { PenTypeMap } from "./constant";
@@ -55,11 +55,9 @@ const mouseCallback = (evt: callbackType) => {
   reload();
   const formCtx = proxyCanvasElement.value!.getContext("2d")!;
   const toCtx = renderCanvasElement.value!.getContext("2d")!;
-  const mergeImageData = props.reserve && setCanvasImgRgbaData(formCtx, toCtx) || null;
-  emit("mouseup", {
-    ...evt,
-    mergeImageData
-  });
+  // const mergeImageData = props.reserve && setCanvasImgRgbaData(formCtx, toCtx) || null;
+  mergeCanvas(formCtx, toCtx);
+  emit("mouseup", evt);
 }
 
 /**识别图像 */

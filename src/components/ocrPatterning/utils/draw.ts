@@ -167,3 +167,14 @@ export const setCanvasImgRgbaData = (
   toCtx.putImageData(mergeImageData, 0, 0);
   return mergeImageData;
 };
+
+/**合并画布 */
+export const mergeCanvas = (
+  fromCtx: CanvasRenderingContext2D,
+  toCtx: CanvasRenderingContext2D
+) => {
+  toCtx.save();
+  toCtx.globalCompositeOperation = "source-over";
+  toCtx.drawImage(fromCtx.canvas, 0, 0);
+  toCtx.restore();
+};
