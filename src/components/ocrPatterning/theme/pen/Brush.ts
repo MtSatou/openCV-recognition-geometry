@@ -75,7 +75,7 @@ export class HandwritingSelf {
     if (this.isDown) {
       let currentPoint = new Point(x, y, Date.now());
       this.addPoint(currentPoint);
-      this.draw(false);
+      this.draw();
     }
   }
 
@@ -117,8 +117,7 @@ export class HandwritingSelf {
   draw(isUp: boolean = false) {
     const { max, min } = this.calculateMinMaxCoordinates(this.line.points)!;
     this.ctx.clearRect(min.x, min.y, max.x, max.y);
-    this.ctx.fillStyle = "#336699";
-    this.ctx.fillRect(min.x, min.y, max.x, max.y);
+    this.ctx.fillStyle = "#00000000";
 
     this.pointLines.forEach((line) => {
       let points = line.points;
@@ -309,7 +308,7 @@ export class HandwritingSelf {
       this.line.points[this.line.points.length - 1].x == p.x &&
       this.line.points[this.line.points.length - 1].y == p.y
     )
-      return;
+    return;
     this.line.points.push(p);
   }
 
