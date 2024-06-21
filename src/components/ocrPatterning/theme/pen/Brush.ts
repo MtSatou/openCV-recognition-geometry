@@ -116,7 +116,7 @@ export class HandwritingSelf {
 
   draw(isUp: boolean = false) {
     const { max, min } = this.calculateMinMaxCoordinates(this.line.points)!;
-    this.ctx.clearRect(min.x, min.y, max.x, max.y);
+    this.ctx.clearRect(min.x, min.y, max.x - min.x, max.y - min.y);
     this.ctx.fillStyle = "#00000000";
 
     this.pointLines.forEach((line) => {

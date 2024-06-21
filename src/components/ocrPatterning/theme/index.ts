@@ -118,7 +118,7 @@ export const initTheme = (
       points.push({ x, y });
       draw(ctx, ctx.canvas, points, props);
     };
-    ctx.canvas.onmouseup = (event: MouseEvent) => {
+    ctx.canvas.onmouseup = () => {
       drawing = false;
       cb && cb({
         // event,
@@ -229,7 +229,7 @@ export const initTheme = (
       });
     };
 
-    const stopDrawing = (event: MouseEvent) => {
+    const stopDrawing = () => {
       isDrawing = false;
       cb && cb({
         // event,
@@ -269,7 +269,7 @@ export const initTheme = (
       points.push({ x, y });
       draw(ctx, ctx.canvas, points, props);
     };
-    ctx.canvas.onmouseup = (event: MouseEvent) => {
+    ctx.canvas.onmouseup = () => {
       drawing = false;
       // 总是闭合
       if (props.alwaysClosed) {
