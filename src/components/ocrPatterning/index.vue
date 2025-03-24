@@ -25,7 +25,7 @@ import { mergeCanvas, clearCanvas } from "./utils/draw"
 import { initTheme } from "./theme"
 import { defaultCanvasOptions } from "./config"
 import { PenTypeMap } from "./types/index.d"
-import type { propsType, callbackType } from "./types/index.d"
+import type { propsType, mouseUpHandlerCallbackType } from "./types/index.d"
 
 const emit = defineEmits(["mouseup"])
 
@@ -48,7 +48,7 @@ const canvasHeight = computed(() => typeof props.height === 'number' ? props.hei
 const canvasFillColor = computed(() => props.fillColor)
 
 // 鼠标抬起处理函数
-const mouseUpCallback = (evt: callbackType) => {
+const mouseUpCallback = (evt: mouseUpHandlerCallbackType) => {
   if (evt.penData.penType === PenTypeMap.Pen_Laser) {
     return;
   }
@@ -71,7 +71,10 @@ const reload = () => {
     Object.assign(defaultCanvasOptions, props.canvasOptions);
     initTheme(ctx, props, { 
       ...props.canvasOptions,
-      mouseUpHandler: mouseUpCallback
+      mouseUpHandler: mouseUpCallback,
+      mouseMoveHandler: (evt: any) => {
+        console.log("move", evt);
+      }
     });
   });
 }

@@ -59,6 +59,7 @@ export const initTheme = (
   props: propsType,
   options: canvasOptionsType
 ) => {
+  let drawing = false;
   const { color, size, lineType, penType } = {
     ...defaultCanvasOptions,
     ...options,
@@ -80,7 +81,6 @@ export const initTheme = (
 
   // 铅笔（常规笔）
   if (penType === PenTypeMap.Pencil) {
-    let drawing = false;
     let points: pointType[] = [];
     ctx.canvas.onmousedown = () => {
       drawing = true;
@@ -93,6 +93,11 @@ export const initTheme = (
       const y = event.clientY - rect.top;
       points.push({ x, y });
       draw(ctx, ctx.canvas, points, props);
+      options.mouseMoveHandler && options.mouseMoveHandler({
+        x, 
+        y, 
+        data: points
+      })
     };
     ctx.canvas.onmouseup = () => {
       drawing = false;
@@ -112,21 +117,32 @@ export const initTheme = (
   }
   // 毛笔
   else if (penType === PenTypeMap.Pen_Brush) {
+    let points: pointType[] = [];
     let handwriting = new HandwritingSelf(ctx.canvas);
     ctx.canvas.onmousedown = function (event: MouseEvent) {
+      drawing = true
+      points = [];
       handwriting.clear();
       handwriting.down(event.x, event.y);
     };
 
     ctx.canvas.onmousemove = function (event: MouseEvent) {
+      if (!drawing) return;
+      points.push({ x: event.x, y: event.y });
       handwriting.move(event.x, event.y);
+      options.mouseMoveHandler && options.mouseMoveHandler({
+        x: event.x, 
+        y: event.y, 
+        data: points
+      })
     };
 
     ctx.canvas.onmouseup = function (event: MouseEvent) {
+      drawing = false
       handwriting.up(event.x, event.y);
       options.mouseUpHandler && options.mouseUpHandler({
         // event,
-        data: [],
+        data: points,
         // pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
         // canvasImageData: getCanvasImgRgbaData(ctx),
         penData: {
@@ -143,7 +159,6 @@ export const initTheme = (
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
 
-    let isDrawing = false;
     let points: {
       alpha: number;
       size: number;
@@ -178,7 +193,7 @@ export const initTheme = (
     };
 
     const startDrawing = (event: MouseEvent) => {
-      isDrawing = true;
+      drawing = true
       points.push({
         x: event.clientX,
         y: event.clientY,
@@ -189,7 +204,7 @@ export const initTheme = (
     };
 
     const draw = (event: MouseEvent) => {
-      if (!isDrawing) return;
+      if (!drawing) return;
       points.push({
         x: event.clientX,
         y: event.clientY,
@@ -197,13 +212,18 @@ export const initTheme = (
         size: size!,
         color: color!,
       });
+      options.mouseMoveHandler && options.mouseMoveHandler({
+        x: event.x, 
+        y: event.y, 
+        data: points
+      })
     };
 
     const stopDrawing = () => {
-      isDrawing = false;
+      drawing = false;
       options.mouseUpHandler && options.mouseUpHandler({
         // event,
-        data: [],
+        data: points,
         // pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
         // canvasImageData: getCanvasImgRgbaData(ctx),
         penData: {
@@ -224,7 +244,6 @@ export const initTheme = (
   }
   // 智能笔
   else if (penType === PenTypeMap.Pen_Smart) {
-    let drawing = false;
     let points: pointType[] = [];
     ctx.canvas.onmousedown = () => {
       drawing = true;
@@ -238,6 +257,11 @@ export const initTheme = (
       const y = event.clientY - rect.top;
       points.push({ x, y });
       draw(ctx, ctx.canvas, points, props);
+      options.mouseMoveHandler && options.mouseMoveHandler({
+        x: event.x, 
+        y: event.y, 
+        data: points
+      })
     };
     ctx.canvas.onmouseup = () => {
       drawing = false;
