@@ -44,7 +44,7 @@ export declare interface canvasOptionsType {
   /**笔类型 */
   penType: PenType
   /**鼠标抬起事件 */
-  mouseUpHandler: (event: mouseUpHandlerCallbackType | usingTypes) => void
+  mouseUpHandler?: (event: mouseUpHandlerCallbackType | usingTypes) => void
   /**鼠标移动事件 */
-  mouseMoveHandler: (event: mouseMoveHandlerCallbackType) => void
+  mouseMoveHandler?: (event: mouseMoveHandlerCallbackType) => void
 }
