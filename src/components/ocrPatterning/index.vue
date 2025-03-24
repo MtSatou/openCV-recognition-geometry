@@ -22,10 +22,10 @@ import { ref, onMounted, watch, nextTick, computed } from "vue";
 import { ocr } from "./utils/openCV"
 import { debounce } from "./utils/common"
 import { mergeCanvas, clearCanvas } from "./utils/draw"
-import { initTheme, callbackType } from "./theme"
+import { initTheme } from "./theme"
 import { defaultCanvasOptions } from "./config"
-import { PenTypeMap } from "./constant";
-import type { propsType } from "./types/props"
+import { PenTypeMap } from "./types/index.d"
+import type { propsType, callbackType } from "./types/index.d"
 
 const emit = defineEmits(["mouseup"])
 
@@ -48,7 +48,7 @@ const canvasHeight = computed(() => typeof props.height === 'number' ? props.hei
 const canvasFillColor = computed(() => props.fillColor)
 
 // 鼠标抬起处理函数
-const mouseCallback = (evt: callbackType) => {
+const mouseUpCallback = (evt: callbackType) => {
   if (evt.penData.penType === PenTypeMap.Pen_Laser) {
     return;
   }
@@ -69,7 +69,10 @@ const reload = () => {
     const canvas = proxyCanvasElement.value!;
     const ctx = canvas.getContext("2d")!;
     Object.assign(defaultCanvasOptions, props.canvasOptions);
-    initTheme(ctx, props, props.canvasOptions, mouseCallback);
+    initTheme(ctx, props, { 
+      ...props.canvasOptions,
+      mouseUpHandler: mouseUpCallback
+    });
   });
 }
 /**清空画布 */

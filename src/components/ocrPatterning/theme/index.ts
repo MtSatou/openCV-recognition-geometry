@@ -1,6 +1,4 @@
-import type { pointType } from "../types/cv";
-import type { propsType } from "../types/props";
-import type { canvasOptionsType, lineType, PenType } from "../types/theme";
+import type { canvasOptionsType, pointType, propsType, lineType, PenType } from "../types/index.d";
 import { defaultCanvasOptions } from "../config";
 import { shapeTypesMap, lineTypeMap, PenTypeMap } from "../constant/index";
 import {
@@ -51,27 +49,6 @@ function draw(
   ctx.stroke();
 }
 
-export interface callbackType {
-  /**鼠标事件对象 */
-  // event: MouseEvent,
-  /**点位数据 */
-  data: any,
-  /**源图像像素数据 */
-  // pixels: ImageData,
-  /**转换后图像像素数据 */
-  // canvasImageData: { r: number, g: number, b: number, a: number }[],
-  penData: {
-    /**笔类型 */
-    penType: PenType,
-    /**笔颜色 */
-    color: string,
-    /**笔大小 */
-    size: number,
-    /**线类型 */
-    lineType: lineType,
-  }
-}
-
 /**
  * 初始化画笔主题
  * @param ctx canvas2D上下文
@@ -80,8 +57,7 @@ export interface callbackType {
 export const initTheme = (
   ctx: CanvasRenderingContext2D,
   props: propsType,
-  options?: canvasOptionsType,
-  cb?: (event: callbackType) => void
+  options: canvasOptionsType
 ) => {
   const { color, size, lineType, penType } = {
     ...defaultCanvasOptions,
@@ -120,7 +96,7 @@ export const initTheme = (
     };
     ctx.canvas.onmouseup = () => {
       drawing = false;
-      cb && cb({
+      options.mouseUpHandler && options.mouseUpHandler({
         // event,
         data: filterDensePoints(points, 2, 2), // 过滤密集点 稍微影响精度 数据量大概下降 60%
         // pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
@@ -148,7 +124,7 @@ export const initTheme = (
 
     ctx.canvas.onmouseup = function (event: MouseEvent) {
       handwriting.up(event.x, event.y);
-      cb && cb({
+      options.mouseUpHandler && options.mouseUpHandler({
         // event,
         data: [],
         // pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
@@ -178,31 +154,25 @@ export const initTheme = (
 
     const drawLaserStroke = () => {
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-      ctx.beginPath();
-
-      for (let i = 0; i < points.length; i++) {
-        const point = points[i];
-        ctx.globalAlpha = point.alpha;
-        ctx.lineWidth = point.size;
-        ctx.strokeStyle = point.color;
-
-        if (i === 0) {
-          ctx.moveTo(point.x, point.y);
-        } else {
-          ctx.lineTo(point.x, point.y);
-        }
+      for (let i = 0; i < points.length - 1; i++) {
+        const startPoint = points[i];
+        const endPoint = points[i + 1];
+        ctx.beginPath();
+        ctx.globalAlpha = startPoint.alpha;
+        ctx.lineWidth = startPoint.size;
+        ctx.strokeStyle = startPoint.color;
+        ctx.moveTo(startPoint.x, startPoint.y);
+        ctx.lineTo(endPoint.x, endPoint.y);
+        ctx.stroke();
       }
-
-      ctx.stroke();
-      ctx.globalAlpha = 1;
 
       // 每个点透明度逐渐降低，并保留透明度>0的数据
       points = points
-        .map((point) => ({
-          ...point,
-          alpha: point.alpha - 0.03,
-        }))
-        .filter((point) => point.alpha > 0);
+      .map(point => ({
+        ...point,
+        alpha: Math.max(point.alpha - 0.04, 0)
+      }))
+      .filter(point => point.alpha > 0);
 
       requestAnimationFrame(drawLaserStroke);
     };
@@ -231,7 +201,7 @@ export const initTheme = (
 
     const stopDrawing = () => {
       isDrawing = false;
-      cb && cb({
+      options.mouseUpHandler && options.mouseUpHandler({
         // event,
         data: [],
         // pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
@@ -311,7 +281,7 @@ export const initTheme = (
           drawShapeOnCanvas(ctx, mostFrequentShape.vertices);
         }
         
-        cb && cb({
+        options.mouseUpHandler && options.mouseUpHandler({
           // event,
           data: mostFrequentShape,
           // pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
@@ -330,7 +300,7 @@ export const initTheme = (
         clearCanvas(ctx.canvas)
         drawShapeFromPoints(ctx, corners);
 
-        cb && cb({
+        options.mouseUpHandler && options.mouseUpHandler({
           // event,
           data: corners,
           // pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),

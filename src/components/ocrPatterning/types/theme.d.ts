@@ -3,6 +3,27 @@ import { lineTypeMap, PenTypeMap } from "../constant"
 export declare type lineType = `${lineTypeMap}`;
 export declare type PenType = `${PenTypeMap}`;
 
+export declare interface callbackType {
+  /**鼠标事件对象 */
+  // event: MouseEvent,
+  /**点位数据 */
+  data: any,
+  /**源图像像素数据 */
+  // pixels: ImageData,
+  /**转换后图像像素数据 */
+  // canvasImageData: { r: number, g: number, b: number, a: number }[],
+  penData: {
+    /**笔类型 */
+    penType: PenType,
+    /**笔颜色 */
+    color: string,
+    /**笔大小 */
+    size: number,
+    /**线类型 */
+    lineType: lineType,
+  }
+}
+
 export declare interface canvasOptionsType {
   /**画笔颜色 */
   color: string;
@@ -12,4 +33,6 @@ export declare interface canvasOptionsType {
   lineType: lineType
   /**笔类型 */
   penType: PenType
+  /**鼠标抬起事件 */
+  mouseUpHandler: (event: callbackType) => void
 }
