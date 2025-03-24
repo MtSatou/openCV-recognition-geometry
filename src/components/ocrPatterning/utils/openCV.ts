@@ -427,16 +427,19 @@ export function findCorners(
  * 过滤掉密集的点，密集地方只留下一个点
  * @param corners 角点数组
  * @param minDistance 最小间距
+ * @param angleThreshold 拐角判断阈值 默认10
+ * @param minInterval 线段判断的间距 默认1
  * @returns
  */
 export function filterDensePoints(
   corners: pointType[],
-  minDistance: number = 20
+  minDistance: number = 20,
+  angleThreshold?: number
 ): pointType[] {
   if (corners.length < 2) {
     return corners;
   }
-  corners = findCorners(corners);
+  corners = findCorners(corners, angleThreshold, minDistance);
   const filteredCorners: pointType[] = [corners[0]];
   for (let i = 1; i < corners.length; i++) {
     const lastCorner = filteredCorners[filteredCorners.length - 1];

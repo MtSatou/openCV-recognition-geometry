@@ -55,7 +55,7 @@ export interface callbackType {
   /**鼠标事件对象 */
   // event: MouseEvent,
   /**点位数据 */
-  // data: any,
+  data: any,
   /**源图像像素数据 */
   // pixels: ImageData,
   /**转换后图像像素数据 */
@@ -122,7 +122,7 @@ export const initTheme = (
       drawing = false;
       cb && cb({
         // event,
-        // data: points,
+        data: filterDensePoints(points, 2, 2), // 过滤密集点 稍微影响精度 数据量大概下降 60%
         // pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
         // canvasImageData: getCanvasImgRgbaData(ctx),
         penData: {
@@ -150,7 +150,7 @@ export const initTheme = (
       handwriting.up(event.x, event.y);
       cb && cb({
         // event,
-        // data: [],
+        data: [],
         // pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
         // canvasImageData: getCanvasImgRgbaData(ctx),
         penData: {
@@ -233,7 +233,7 @@ export const initTheme = (
       isDrawing = false;
       cb && cb({
         // event,
-        // data: [],
+        data: [],
         // pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
         // canvasImageData: getCanvasImgRgbaData(ctx),
         penData: {
@@ -313,7 +313,7 @@ export const initTheme = (
         
         cb && cb({
           // event,
-          // data: mostFrequentShape,
+          data: mostFrequentShape,
           // pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
           // canvasImageData: getCanvasImgRgbaData(ctx),
           penData: {
@@ -332,7 +332,7 @@ export const initTheme = (
 
         cb && cb({
           // event,
-          // data: corners,
+          data: corners,
           // pixels: ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height),
           // canvasImageData: getCanvasImgRgbaData(ctx),
           penData: {
