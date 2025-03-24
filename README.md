@@ -3,4 +3,4 @@ opencvjs识别几何图形，通过判断形状特征来识别`三角形` `正�
 
 
 
-![demonstration](G:\web\openCV-recognition-geometry\demonstration.gif)
+![demonstration](https://github.com/MtSatou/openCV-recognition-geometry/blob/main/demonstration.gif)
